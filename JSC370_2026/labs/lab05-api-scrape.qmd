@@ -66,8 +66,12 @@ Refer to the [TMDB Discover API docs](https://developer.themoviedb.org/reference
 
 ```{python}
 # TMDB API configuration
+import os
+from dotenv import load_dotenv
+load_dotenv()
+
 BASE_URL = "https://api.themoviedb.org/3"
-API_KEY = "8e15d2f12a7ed216bf346076fa8fd450"  # Replace with your API key!
+API_KEY = os.getenv("TMDB_API_KEY")
 
 # Discover top-grossing movies
 url = f"{BASE_URL}/discover/movie"
