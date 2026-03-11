@@ -1,0 +1,136 @@
+---
+title: "JSC370 2026 Midterm Project"
+author: "Yibing Xia"
+format:
+  html:
+    embed-resources: true
+jupyter: python3
+---
+
+## Introduction
+
+```{python}
+#| label: intro-background-rq
+# Placeholder: background on dataset(s) and research question(s)/hypotheses.
+```
+
+### Background and Literature
+
+Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. From the early 1970s to the late 2010s, Canada’s aggregated number of interprovincial migrants is relatively stable (Chastko, 2021). However, the net interprovincial migration rate differs substantially across provinces. 
+
+Another source of instability lies in the destinations of internal migration. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these Census Metropolitan Areas (CMAs) have seen an exodus in recent years owing to 
+
+The article by Song et al. (2026) explains the ...
+
+This project aims to empirically test the ... 
+
+### Research Questions
+1. How much variance in internal migration in Canada is explained by demographic and socioeconomic push and pull factors? 
+  - This problem is further decomposed into two subproblems: interprovincial and intraprovincial migration. 
+2. As an extension to RQ1,  
+3. Did internal migration trends in 2020-2022 systematically differ from the pre-Covid trends? 
+-  
+
+### Hypotheses
+1. The push and pull factors of the two types of migration are likely different. Identifying these factors provides empirical evidence ...
+2. The Covid-19 pandemic is hypothesized to 
+
+### Datasets
+Here is the list of datasets used in this project. All tables are retrieved from Statistics Canada, using its API. 
+
+- 
+
+Each data table released by Statistics Canada usually has a small number of features. Such display makes descriptive statistics convenient, but a modelling task requires features to be assembled and merged into a clean dataframe. 
+
+To ensure that the datasets can be merged harmoniously without conflicts on the temporal or geographic scales, all tables have annually collected data. The geographic granularity for most tables is ...
+
+
+## Methods
+
+### Data Acquisition
+
+```{python}
+#| label: methods-data-acquisition
+# Placeholder: API/scraping workflow and data source details.
+```
+
+### Data Cleaning and Wrangling
+
+```{python}
+#| label: methods-cleaning-wrangling
+# Placeholder: cleaning, transformations, joins, and feature engineering steps.
+```
+
+### Tools and Statistical Methods
+
+```{python}
+#| label: methods-tools-statistics
+# Placeholder: EDA/statistical methods and software/packages used.
+```
+
+## Preliminary Results
+
+### Summary Statistics
+
+```{python}
+#| label: prelim-summary-stats
+# Placeholder: formatted summary statistics tables.
+```
+
+### Publication-Quality Figures
+
+```{python}
+#| label: prelim-figures
+# Placeholder: visualizations for exploratory analysis.
+```
+
+### Preliminary Statistical Analysis
+
+```{python}
+#| label: prelim-stat-analysis
+# Placeholder: initial statistical model outputs.
+```
+
+## Summary
+
+### Findings So Far
+
+```{python}
+#| label: summary-findings
+# Placeholder: concise interpretation of current findings.
+```
+
+### Plan for Final Project
+
+```{python}
+#| label: summary-final-plan
+# Placeholder: planned ML modeling, website development, and interactive visualizations.
+```
+
+List of steps:
+1. For RQ1, the following models will be trained, tuned and compared against the current baseline OLS model:
+  - Ridge Regressoin
+  - Lasso Regression
+  - GAM
+  - Random Forest 
+  - XGBoost
+As discussed in the Methods section, time series data cannot be partitioned using `train_test_split` directly, as such an approach leads to data leakage. The specialized `TimeSeriesSplit` is used to produce training and test sets. 5 fold cross-validation will be conducted. For models with a lot of tunable parameters and consequently a large grid, such as Random Forest and XGBoost, `RandomizedSearchCV` will be used. 
+2. RQ2 requires more analysis ...
+3. RQ3 is a statistical inference and not a prediction task. Hence it will not be the focus of the final project. 
+  - A GAM model will be fitted and compared with baseline OLS to check for nonlinear effects.
+
+The final project will include two additional components: a GitHub website, and interactive visualizations. 
+
+## Code and Reproducibility
+
+```{python}
+#| label: reproducibility
+# Placeholder: GitHub repo link, file organization, and reproducibility notes.
+```
+
+## Readability and Style
+
+```{python}
+#| label: readability-style
+# Placeholder: report style/formatting checklist.
+```
