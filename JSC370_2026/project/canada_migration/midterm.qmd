@@ -7,47 +7,46 @@ format:
 jupyter: python3
 ---
 
-## Introduction
+Link to GitHub repository: https://github.com/jennifer1046/JSC370/tree/main/JSC370_2026/project/canada_migration
 
-```{python}
-#| label: intro-background-rq
-# Placeholder: background on dataset(s) and research question(s)/hypotheses.
-```
+## Introduction
 
 ### Background and Literature
 
-Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. From the early 1970s to the late 2010s, Canada’s aggregated number of interprovincial migrants is relatively stable (Chastko, 2021). However, the net interprovincial migration rate differs substantially across provinces. 
+Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. From the early 1970s to the late 2010s, Canada’s aggregated number of interprovincial migrants is relatively stable (Chastko, 2021). However, the net interprovincial migration rate differs substantially across provinces. 
 
-Another source of instability lies in the destinations of internal migration. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these Census Metropolitan Areas (CMAs) have seen an exodus in recent years owing to 
+Another source of instability lies in the destinations of internal migration. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these Census Metropolitan Areas (CMAs) have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024).
 
-The article by Song et al. (2026) explains the ...
+The article by Song et al. (2026) explains the motivation for the movement within and across provinces, citing housing conditions and employment opportunities as the top reasons. These results are based on the Canadian Housing Survey conducted in 2022. 
 
-This project aims to empirically test the ... 
+This project aims to empirically test the predictive power of a series of demographic and socioeconomic variables on internal net migration rates in Canada. 
 
 ### Research Questions
-1. How much variance in internal migration in Canada is explained by demographic and socioeconomic push and pull factors? 
-  - This problem is further decomposed into two subproblems: interprovincial and intraprovincial migration. 
-2. As an extension to RQ1,  
-3. Did internal migration trends in 2020-2022 systematically differ from the pre-Covid trends? 
--  
+1. How much variance in internal migration in Canada is explained by demographic and socioeconomic push and pull factors? This problem is further decomposed into two subproblems: interprovincial and intraprovincial migration. 
+2. As an extension to RQ1, does lagging the key push/pull factor by one to two years improve out-of-time prediction of net migration above the contemporaneous baseline from RQ1? For instance, increased rental pressure prompts people to move, but this effect is likely not immediate. 
+3. Did internal migration trends in 2020-2022 systematically differ from the pre-Covid trends? The Covid-19 pandemic is a shock event that directly or indirectly alters migration patterns within Canada. 
 
 ### Hypotheses
-1. The push and pull factors of the two types of migration are likely different. Identifying these factors provides empirical evidence ...
-2. The Covid-19 pandemic is hypothesized to 
+1. The push and pull factors of the two types of migration are likely different.
+2. The models with lagged variables are hypothesized to perform slightly better than the baseline models. 
+3. The Covid-19 pandemic is hypothesized to be associated with in-migration in small to medium CMAs and out-migration in large CMAs, holding the control variables fixed. 
 
 ### Datasets
 Here is the list of datasets used in this project. All tables are retrieved from Statistics Canada, using its API. 
 
-- 
+- Table 17-10-0149-01: Components of population change by census metropolitan area and census agglomeration, 2021 boundaries
+- Table 27-10-0273-02: Expenditures on research and development (R&D) by performing sector (x 1,000,000)
+- Table 34-10-0133-01: Canada Mortgage and Housing Corporation, average rents for areas with a population of 10,000 and over
+- Table 14-10-0020-01: Unemployment rate, participation rate and employment rate by educational attainment, annual
+- Table 17-10-0148-01: Population estimates, July 1, by census metropolitan area and census agglomeration, 2021 boundaries
 
 Each data table released by Statistics Canada usually has a small number of features. Such display makes descriptive statistics convenient, but a modelling task requires features to be assembled and merged into a clean dataframe. 
-
-To ensure that the datasets can be merged harmoniously without conflicts on the temporal or geographic scales, all tables have annually collected data. The geographic granularity for most tables is ...
-
 
 ## Methods
 
 ### Data Acquisition
+
+The Statistics Canada API is used to pull tabular data over the year range 2001 to 2024. For some datasets whose last update is prior to 2024, the data from 2001 to the latest year is pulled.
 
 ```{python}
 #| label: methods-data-acquisition
@@ -61,12 +60,29 @@ To ensure that the datasets can be merged harmoniously without conflicts on the 
 # Placeholder: cleaning, transformations, joins, and feature engineering steps.
 ```
 
+To ensure that the datasets can be merged harmoniously without conflicts on the temporal or geographic scales, all tables have annually collected data. The geographic granularity for most tables is Census Metropolitan Area (CMA) and Census Agglomeration (CA). 
+
+However, there are two challenge in merging the dataframes. One lies in the misalignment of the exact names of geographic regions. For example, 
+
+Distinction between CMAs and CAs:...
+
+The CAs are included in the analysis for increased statistical power and geographic granularity.
+
+The other challenge exists because of ...
+
+
+### Outliers
+
+### Null Values
+
 ### Tools and Statistical Methods
 
 ```{python}
 #| label: methods-tools-statistics
 # Placeholder: EDA/statistical methods and software/packages used.
 ```
+
+
 
 ## Preliminary Results
 
@@ -77,7 +93,7 @@ To ensure that the datasets can be merged harmoniously without conflicts on the 
 # Placeholder: formatted summary statistics tables.
 ```
 
-### Publication-Quality Figures
+### Figures
 
 ```{python}
 #| label: prelim-figures
@@ -100,37 +116,55 @@ To ensure that the datasets can be merged harmoniously without conflicts on the 
 # Placeholder: concise interpretation of current findings.
 ```
 
+Aspects of the research questions that have been answered:
+
+
+Aspects of the research questions that remain open:
+
+
+
 ### Plan for Final Project
 
-```{python}
-#| label: summary-final-plan
-# Placeholder: planned ML modeling, website development, and interactive visualizations.
-```
-
 List of steps:
-1. For RQ1, the following models will be trained, tuned and compared against the current baseline OLS model:
-  - Ridge Regressoin
-  - Lasso Regression
-  - GAM
-  - Random Forest 
-  - XGBoost
-As discussed in the Methods section, time series data cannot be partitioned using `train_test_split` directly, as such an approach leads to data leakage. The specialized `TimeSeriesSplit` is used to produce training and test sets. 5 fold cross-validation will be conducted. For models with a lot of tunable parameters and consequently a large grid, such as Random Forest and XGBoost, `RandomizedSearchCV` will be used. 
-2. RQ2 requires more analysis ...
-3. RQ3 is a statistical inference and not a prediction task. Hence it will not be the focus of the final project. 
+
+1. So far, a hold-out test set of approximately 25% of the merged dataset is created and excluded from exploratory data analysis and model training. As discussed in the Methods section, time series data cannot be partitioned using `train_test_split` directly, as such an approach leads to data leakage. The specialized `TimeSeriesSplit` will be used to produce cross-validation folds.
+
+2. For RQ1, the following models will be trained, tuned and evaluated against the current baseline OLS model:
+
+  - Ridge Regression, with the following proposed hyperparameters to tune: `alpha`
+
+  - Lasso Regression, with the following proposed hyperparameters to tune: `alpha`
+
+  - Generalized Additive Model (GAM)
+
+  - Random Forest, with the following proposed hyperparameters to tune: `n_estimators`, `max_features`, `max_depth`, and `min_samples_leaf`
+
+  - XGBoost, with the following proposed hyperparameters to tune: `n_estimators`, `max_depth`, `learning_rate`, and `colsample_bytree`
+
+ 5 fold cross-validation will be conducted. For models with a lot of tunable parameters and consequently a large grid, such as Random Forest and XGBoost, `RandomizedSearchCV` will be used. 
+
+3. RQ2 requires more feature engineering. 
+
+  - Once the most important predictor of net migration is identified (through the average of SHAP importance scores given by different models), 
+
+  - 
+
+4. RQ3 is a statistical inference and not a prediction task. Hence it will not be the focus of the final project. 
+
   - A GAM model will be fitted and compared with baseline OLS to check for nonlinear effects.
 
 The final project will include two additional components: a GitHub website, and interactive visualizations. 
 
-## Code and Reproducibility
 
-```{python}
-#| label: reproducibility
-# Placeholder: GitHub repo link, file organization, and reproducibility notes.
-```
+## References
 
-## Readability and Style
+- Chastko, K. (2021, July 14). Report on the demographic situation in Canada internal migration: Overview, 2016/2017 to 2018/2019. Internal migration: Overview, 2016/2017 to 2018/2019. https://www150.statcan.gc.ca/n1/pub/91-209-x/2021001/article/00001-eng.htm 
+- McQuillan, K. (2024). Leaving the big city: New patterns of migration in Canada. The School of Public Policy Publications, 17(1). https://doi.org/10.55016/ojs/sppp.v17i1.78322 
+- Song, G., Charbonneau, P., Chastko, K., & Grueva, S. (2026, February 16). Why do people move within Canada? A study on the reasons for internal migration and mobility using the Canadian Housing Survey. Statistics Canada. https://www150.statcan.gc.ca/n1/pub/91f0015m/91f0015m2026001-eng.htm 
+- Statistics Canada. Table 17-10-0149-01  Components of population change by census metropolitan area and census agglomeration, 2021 boundaries
+- Statistics Canada. Table 27-10-0273-02  Expenditures on research and development (R&D) by performing sector (x 1,000,000)
+- Statistics Canada. Table 34-10-0133-01  Canada Mortgage and Housing Corporation, average rents for areas with a population of 10,000 and over
+- Statistics Canada. Table 14-10-0020-01  Unemployment rate, participation rate and employment rate by educational attainment, annual
+- Statistics Canada. Table 17-10-0148-01  Population estimates, July 1, by census metropolitan area and census agglomeration, 2021 boundaries
 
-```{python}
-#| label: readability-style
-# Placeholder: report style/formatting checklist.
-```
+
