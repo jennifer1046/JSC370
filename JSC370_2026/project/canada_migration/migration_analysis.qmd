@@ -18,6 +18,9 @@ execute:
 import io
 import os
 import re
+import shutil
+import subprocess
+import tempfile
 import zipfile
 from pathlib import Path
 
@@ -27,12 +30,19 @@ import pandas as pd
 import plotnine as p9
 import requests
 from IPython.display import display
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 PROJECT_ROOT = Path.cwd()
 RAW_DIR = PROJECT_ROOT / "data" / "raw"
 FIG_DIR = PROJECT_ROOT / "outputs" / "figures"
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 ANALYSIS_YEAR_START = 2001
 ANALYSIS_YEAR_END_CAP = 2024
+
+RAW_DIR.mkdir(parents=True, exist_ok=True)
+FIG_DIR.mkdir(parents=True, exist_ok=True)
+PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
 
 COMMON_DROP_COLS = {"DGUID", "UOM", "UOM_ID", "SCALAR_FACTOR", "SCALAR_ID", "VECTOR","COORDINATE", "STATUS", "SYMBOL", "TERMINATED", "DECIMALS",}
 
@@ -42,14 +52,56 @@ GEO_COL = "GEO"
 REF_COL = "REF_DATE"
 VALUE_COL = "VALUE"
 
+STATCAN_SESSION = requests.Session()
+STATCAN_SESSION.mount(
+    "https://",
+    HTTPAdapter(
+        max_retries=Retry(
+            total=5,
+            connect=5,
+            read=5,
+            backoff_factor=2,
+            status_forcelist=[429, 500, 502, 503, 504],
+            allowed_methods=frozenset(["GET"]),
+        )
+    ),
+)
+STATCAN_SESSION.headers.update({"User-Agent": "JSC370-canada-migration/1.0"})
+
 def pull_statcan(table_id: str) -> pd.DataFrame:
     """table_id e.g. '17100149' (no dashes)."""
     url = f"https://www150.statcan.gc.ca/n1/tbl/csv/{table_id}-eng.zip"
-    r = requests.get(url, timeout=120)
-    r.raise_for_status()
-    z = zipfile.ZipFile(io.BytesIO(r.content))
-    fname = [f for f in z.namelist() if f.endswith(".csv") and "MetaData" not in f][0]
-    return pd.read_csv(z.open(fname), encoding="latin-1", low_memory=False)
+    with tempfile.NamedTemporaryFile(suffix=".zip", delete=False) as tmp:
+        tmp_path = Path(tmp.name)
+    try:
+        try:
+            with STATCAN_SESSION.get(url, stream=True, timeout=(120, 3600)) as r:
+                r.raise_for_status()
+                with tmp_path.open("wb") as f:
+                    for chunk in r.iter_content(chunk_size=1024 * 1024):
+                        if chunk:
+                            f.write(chunk)
+        except requests.RequestException:
+            if shutil.which("curl") is None:
+                raise
+            subprocess.run(
+                [
+                    "curl",
+                    "-fL",
+                    "--retry", "5",
+                    "--retry-all-errors",
+                    "--connect-timeout", "120",
+                    "-o", str(tmp_path),
+                    url,
+                ],
+                check=True,
+            )
+        with zipfile.ZipFile(tmp_path) as z:
+            fname = [f for f in z.namelist() if f.endswith(".csv") and "MetaData" not in f][0]
+            with z.open(fname) as f:
+                return pd.read_csv(f, encoding="latin-1", low_memory=False)
+    finally:
+        tmp_path.unlink(missing_ok=True)
 
 def normalize_statcan_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Normalize headers, including BOM/quote artifacts in REF_DATE."""
