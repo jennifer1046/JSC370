@@ -208,7 +208,10 @@ __marimo__/
 
 *.docx
 .DS_Store
-*.csv
+# CSV policy: allow normal CSV files in Git; ignore only oversized/raw files.
+JSC370_2026/Major_Crime_Indicators_Open_Data_-3805566126367379926.csv
+JSC370_2026/homework/cfpb_data.csv
+JSC370_2026/project/canada_migration/data/raw/*.csv
 .env
 JSC370_2026/labs/
 JSC370_2026/homework/
