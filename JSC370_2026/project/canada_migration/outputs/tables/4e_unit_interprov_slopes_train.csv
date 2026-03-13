@@ -1,0 +1,41 @@
+geo_key,geo_name,n,slope
+"calgary, alberta","Calgary (CMA), Alberta",18,-548.8544891640909
+"edmonton, alberta","Edmonton (CMA), Alberta",18,-276.3849329205389
+"montrã©al, quebec","MontrÃ©al (CMA), Quebec",18,-137.01547987615925
+"winnipeg, manitoba","Winnipeg (CMA), Manitoba",18,-125.65015479876027
+"regina, saskatchewan","Regina (CMA), Saskatchewan",18,-56.03095975232244
+"red deer, alberta","Red Deer (CMA), Alberta",18,-54.60268317853499
+"saskatoon, saskatchewan","Saskatoon (CMA), Saskatchewan",18,-46.370485036119824
+"lethbridge, alberta","Lethbridge (CMA), Alberta",18,-34.59029927760625
+"st. john's, newfoundland and labrador","St. John's (CMA), Newfoundland and Labrador",18,-27.841073271413276
+"fredericton, new brunswick","Fredericton (CMA), New Brunswick",18,-21.219814241486063
+"quã©bec, quebec","QuÃ©bec (CMA), Quebec",18,-19.473684210526184
+"barrie, ontario","Barrie (CMA), Ontario",18,-16.94014447884405
+"oshawa, ontario","Oshawa (CMA), Ontario",18,-16.552115583074983
+"st. catharines-niagara, ontario","St. Catharines - Niagara (CMA), Ontario",18,-12.101135190917939
+"saint john, new brunswick","Saint John (CMA), New Brunswick",18,-8.312693498452084
+"sherbrooke, quebec","Sherbrooke (CMA), Quebec",18,-6.894736842105201
+"moncton, new brunswick","Moncton (CMA), New Brunswick",18,-4.882352941176478
+"peterborough, ontario","Peterborough (CMA), Ontario",18,-4.309597523219639
+"saguenay, quebec","Saguenay (CMA), Quebec",18,-1.8400412796696266
+"nanaimo, british columbia","Nanaimo (CMA), British Columbia",18,-0.9287925696599771
+"drummondville, quebec","Drummondville (CMA), Quebec",18,-0.4509803921568479
+"trois-riviã¨res, quebec","Trois-RiviÃ¨res (CMA), Quebec",18,-0.24767801857587482
+"brantford, ontario","Brantford (CMA), Ontario",18,0.7192982456141694
+"greater sudbury, ontario","Greater Sudbury (CMA), Ontario",18,0.8761609907120003
+"chilliwack, british columbia","Chilliwack (CMA), British Columbia",18,12.432404540763578
+"kingston, ontario","Kingston (CMA), Ontario",18,14.192982456140852
+"abbotsford-mission, british columbia","Abbotsford - Mission (CMA), British Columbia",18,14.861713106294909
+"guelph, ontario","Guelph (CMA), Ontario",18,15.2342621259033
+"hamilton, ontario","Hamilton (CMA), Ontario",18,21.78740970072361
+"thunder bay, ontario","Thunder Bay (CMA), Ontario",18,27.223942208462965
+"kitchener-cambridge-waterloo, ontario","Kitchener - Cambridge - Waterloo (CMA), Ontario",18,31.403508771930554
+"london, ontario","London (CMA), Ontario",18,39.99793601651251
+"kamloops, british columbia","Kamloops (CMA), British Columbia",18,40.018575851392654
+"windsor, ontario","Windsor (CMA), Ontario",18,47.00103199174553
+"kelowna, british columbia","Kelowna (CMA), British Columbia",18,74.10835913312577
+"halifax, nova scotia","Halifax (CMA), Nova Scotia",18,76.26109391124963
+"victoria, british columbia","Victoria (CMA), British Columbia",18,99.90402476780098
+"ottawa-gatineau, ontario/quebec","Ottawa - Gatineau (CMA), Ontario/Quebec",18,101.11971104231247
+"vancouver, british columbia","Vancouver (CMA), British Columbia",18,266.2074303405514
+"toronto, ontario","Toronto (CMA), Ontario",18,406.45304437565403

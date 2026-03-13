@@ -1,0 +1,127 @@
+geo_key,geo_name,slope
+"toronto, ontario","Toronto (CMA), Ontario",-1320.1775025799823
+"montrã©al, quebec","MontrÃ©al (CMA), Quebec",-452.9948400412779
+"vancouver, british columbia","Vancouver (CMA), British Columbia",-446.3993808049506
+"wood buffalo, alberta","Wood Buffalo (CA), Alberta",-97.2352941176462
+"quã©bec, quebec","QuÃ©bec (CMA), Quebec",-94.747162022705
+"red deer, alberta","Red Deer (CMA), Alberta",-55.056759545924045
+"barrie, ontario","Barrie (CMA), Ontario",-45.82146542827514
+"grande prairie, alberta","Grande Prairie (CA), Alberta",-33.0464396284836
+"moncton, new brunswick","Moncton (CMA), New Brunswick",-29.72858617131063
+"fort st. john, british columbia","Fort St. John (CA), British Columbia",-26.71517027863767
+"brooks, alberta","Brooks (CA), Alberta",-24.45923632610954
+"medicine hat, alberta","Medicine Hat (CA), Alberta",-19.13931888544925
+"greater sudbury, ontario","Greater Sudbury (CMA), Ontario",-17.950464396285664
+"kelowna, british columbia","Kelowna (CMA), British Columbia",-15.3426212590296
+"nanaimo, british columbia","Nanaimo (CMA), British Columbia",-11.69556243550074
+"vernon, british columbia","Vernon (CA), British Columbia",-10.52941176470578
+"portage la prairie, manitoba","Portage la Prairie (CA), Manitoba",-10.220846233230107
+"joliette, quebec","Joliette (CA), Quebec",-9.15789473684227
+"pembroke, ontario","Pembroke (CA), Ontario",-9.03199174406606
+"prince albert, saskatchewan","Prince Albert (CA), Saskatchewan",-8.792569659442629
+"estevan, saskatchewan","Estevan (CA), Saskatchewan",-8.56862745098049
+"cape breton, nova scotia","Cape Breton (CA), Nova Scotia",-7.965944272445903
+"riviã¨re-du-loup, quebec","RiviÃ¨re-du-Loup (CA), Quebec",-6.8875128998969775
+"sept-ãles, quebec","Sept-Ãles (CA), Quebec",-6.70485036119737
+"north battleford, saskatchewan","North Battleford (CA), Saskatchewan",-6.243550051599578
+"truro, nova scotia","Truro (CA), Nova Scotia",-6.114551083591306
+"camrose, alberta","Camrose (CA), Alberta",-5.981424148606874
+"dawson creek, british columbia","Dawson Creek (CA), British Columbia",-5.625386996904021
+"sainte-marie, quebec","Sainte-Marie (CA), Quebec",-5.567595459236393
+"wetaskiwin, alberta","Wetaskiwin (CA), Alberta",-3.811145510835977
+"drummondville, quebec","Drummondville (CMA), Quebec",-2.5098039215687904
+"new glasgow, nova scotia","New Glasgow (CA), Nova Scotia",-2.3075335397317107
+"cobourg, ontario","Cobourg (CA), Ontario",-1.9865841073271533
+"moose jaw, saskatchewan","Moose Jaw (CA), Saskatchewan",-0.737874097007182
+"sarnia, ontario","Sarnia (CA), Ontario",-0.6749226006192669
+"matane, quebec","Matane (CA), Quebec",-0.2672858617131869
+"gander, newfoundland and labrador","Gander (CA), Newfoundland and Labrador",0.9680082559339864
+"corner brook, newfoundland and labrador","Corner Brook (CA), Newfoundland and Labrador",1.0794633642931797
+"charlottetown, prince edward island","Charlottetown (CA), Prince Edward Island",1.524251805985574
+"orillia, ontario","Orillia (CA), Ontario",1.8286893704851304
+"yorkton, saskatchewan","Yorkton (CA), Saskatchewan",2.307533539731742
+"val-d'or, quebec","Val-d'Or (CA), Quebec",2.5211558307533126
+"grand falls-windsor, newfoundland and labrador","Grand Falls-Windsor (CA), Newfoundland and Labrador",2.666666666666711
+"swift current, saskatchewan","Swift Current (CA), Saskatchewan",3.558307533539722
+"saint-georges, quebec","Saint-Georges (CA), Quebec",3.5985552115582946
+"saint john, new brunswick","Saint John (CMA), New Brunswick",4.2249742002062325
+"brandon, manitoba","Brandon (CA), Manitoba",4.252837977296191
+"williams lake, british columbia","Williams Lake (CA), British Columbia",4.268317853456932
+"summerside, prince edward island","Summerside (CA), Prince Edward Island",4.514963880288969
+"victoriaville, quebec","Victoriaville (CA), Quebec",5.085655314757562
+"quesnel, british columbia","Quesnel (CA), British Columbia",5.108359133126664
+"saint-hyacinthe, quebec","Saint-Hyacinthe (CA), Quebec",5.135190918472804
+"thompson, manitoba","Thompson (CA), Manitoba",5.145510835913361
+"powell river, british columbia","Powell River (CA), British Columbia",5.224974200206173
+"oshawa, ontario","Oshawa (CMA), Ontario",5.378740970072487
+"lachute, quebec","Lachute (CA), Quebec",6.042311661506874
+"kentville, nova scotia","Kentville (CA), Nova Scotia",6.562435500516047
+"sault ste. marie, ontario","Sault Ste. Marie (CA), Ontario",6.599587203301963
+"cornwall, ontario","Cornwall (CA), Ontario",6.723426212590445
+"baie-comeau, quebec","Baie-Comeau (CA), Quebec",6.800825593395397
+"edmundston, new brunswick","Edmundston (CA), New Brunswick",7.341589267285935
+"sorel-tracy, quebec","Sorel-Tracy (CA), Quebec",7.3529411764706
+"owen sound, ontario","Owen Sound (CA), Ontario",7.417956656346698
+"brockville, ontario","Brockville (CA), Ontario",7.835913312693515
+"miramichi, new brunswick","Miramichi (CA), New Brunswick",8.30134158926739
+"cranbrook, british columbia","Cranbrook (CA), British Columbia",8.34365325077408
+"st. john's, newfoundland and labrador","St. John's (CMA), Newfoundland and Labrador",8.560371517027717
+"penticton, british columbia","Penticton (CA), British Columbia",9.100103199174688
+"north bay, ontario","North Bay (CA), Ontario",9.18575851393177
+"abbotsford-mission, british columbia","Abbotsford - Mission (CMA), British Columbia",9.471620227038633
+"alma, quebec","Alma (CA), Quebec",9.618163054695662
+"bathurst, new brunswick","Bathurst (CA), New Brunswick",9.675954592363244
+"dolbeau-mistassini, quebec","Dolbeau-Mistassini (CA), Quebec",10.185758513931852
+"salmon arm, british columbia","Salmon Arm (CA), British Columbia",10.27038183694528
+"duncan, british columbia","Duncan (CA), British Columbia",10.916408668730417
+"sherbrooke, quebec","Sherbrooke (CMA), Quebec",11.230134158927553
+"timmins, ontario","Timmins (CA), Ontario",11.27141382868918
+"regina, saskatchewan","Regina (CMA), Saskatchewan",11.38596491228041
+"shawinigan, quebec","Shawinigan (CA), Quebec",12.34571723426198
+"tillsonburg, ontario","Tillsonburg (CA), Ontario",13.327141382868962
+"terrace, british columbia","Terrace (CA), British Columbia",13.61609907120733
+"kamloops, british columbia","Kamloops (CMA), British Columbia",13.696594427243879
+"rimouski, quebec","Rimouski (CA), Quebec",14.769865841073655
+"rouyn-noranda, quebec","Rouyn-Noranda (CA), Quebec",15.304437564499143
+"cowansville, quebec","Cowansville (CA), Quebec",16.336429308565748
+"kenora, ontario","Kenora (CA), Ontario",17.055727554179697
+"midland, ontario","Midland (CA), Ontario",17.107327141382914
+"campbell river, british columbia","Campbell River (CA), British Columbia",17.587203302373478
+"winnipeg, manitoba","Winnipeg (CMA), Manitoba",17.648090815273786
+"prince rupert, british columbia","Prince Rupert (CA), British Columbia",18.593395252837876
+"port alberni, british columbia","Port Alberni (CA), British Columbia",18.95252837977273
+"parksville, british columbia","Parksville (CA), British Columbia",19.042311661506936
+"collingwood, ontario","Collingwood (CA), Ontario",20.158926728586458
+"elliot lake, ontario","Elliot Lake (CA), Ontario",20.694530443756435
+"salaberry-de-valleyfield, quebec","Salaberry-de-Valleyfield (CA), Quebec",20.85861713106313
+"thetford mines, quebec","Thetford Mines (CA), Quebec",20.945304437564626
+"courtenay, british columbia","Courtenay (CA), British Columbia",22.969040247677906
+"stratford, ontario","Stratford (CA), Ontario",23.59442724458214
+"thunder bay, ontario","Thunder Bay (CMA), Ontario",24.660474716202238
+"squamish, british columbia","Squamish (CA), British Columbia",26.62641898864848
+"trois-riviã¨res, quebec","Trois-RiviÃ¨res (CMA), Quebec",27.485036119710845
+"brantford, ontario","Brantford (CMA), Ontario",29.00928792569658
+"kitchener-cambridge-waterloo, ontario","Kitchener - Cambridge - Waterloo (CMA), Ontario",29.321981424148746
+"granby, quebec","Granby (CA), Quebec",30.130030959752098
+"fredericton, new brunswick","Fredericton (CMA), New Brunswick",30.44169246646055
+"kawartha lakes, ontario","Kawartha Lakes (CA), Ontario",33.71413828689404
+"guelph, ontario","Guelph (CMA), Ontario",35.313725490195935
+"halifax, nova scotia","Halifax (CMA), Nova Scotia",38.25077399380845
+"peterborough, ontario","Peterborough (CMA), Ontario",42.5479876160993
+"woodstock, ontario","Woodstock (CA), Ontario",43.836945304437506
+"prince george, british columbia","Prince George (CA), British Columbia",47.9618163054695
+"norfolk, ontario","Norfolk (CA), Ontario",48.09391124870988
+"windsor, ontario","Windsor (CMA), Ontario",52.363261093912804
+"hamilton, ontario","Hamilton (CMA), Ontario",59.32404540763899
+"chatham-kent, ontario","Chatham-Kent (CA), Ontario",61.021671826625095
+"kingston, ontario","Kingston (CMA), Ontario",70.60474716202363
+"saskatoon, saskatchewan","Saskatoon (CMA), Saskatchewan",74.02063983488183
+"saguenay, quebec","Saguenay (CMA), Quebec",75.16924664602685
+"lethbridge, alberta","Lethbridge (CMA), Alberta",75.49638802889591
+"chilliwack, british columbia","Chilliwack (CMA), British Columbia",107.54489164086698
+"victoria, british columbia","Victoria (CMA), British Columbia",127.79979360165171
+"calgary, alberta","Calgary (CMA), Alberta",137.9473684210554
+"st. catharines-niagara, ontario","St. Catharines - Niagara (CMA), Ontario",178.56656346749335
+"london, ontario","London (CMA), Ontario",181.54901960784267
+"edmonton, alberta","Edmonton (CMA), Alberta",194.5376676986585
+"ottawa-gatineau, ontario/quebec","Ottawa - Gatineau (CMA), Ontario/Quebec",297.0980392156852
