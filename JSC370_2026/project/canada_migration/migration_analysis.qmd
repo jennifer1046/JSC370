@@ -183,38 +183,53 @@ def build_age_feature_panel(
     value_col: str = "VALUE",
     year_min: int = ANALYSIS_YEAR_START,
     year_max: int = ANALYSIS_YEAR_END_CAP,
-) -> pd.DataFrame:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
+    steps = []
     age = age_df[[geo_col, ref_col, "Gender", "Age group", value_col]].copy()
+    record_shape(steps, "Keep needed columns", age, "Keep geography, year, gender, age group, and value.")
     age[value_col] = pd.to_numeric(age[value_col], errors="coerce")
     age["year"] = pd.to_numeric(age[ref_col], errors="coerce").astype("Int64")
     age = age[
         age["Gender"].eq("Total - gender")
         & age["year"].between(year_min, year_max, inclusive="both")
     ].dropna(subset=[geo_col, "year", value_col])
+    record_shape(steps, "Keep total gender and analysis years", age, f"Keep 'Total - gender' and years {year_min}-{year_max}.")
 
     cohort_map = {"All ages": "population"} | {label: "pop_25_44" for label in AGE_25_44_LABELS} | {label: "pop_65plus" for label in AGE_65PLUS_LABELS}
+    age = age.assign(cohort=age["Age group"].map(cohort_map)).dropna(subset=["cohort"]).copy()
+    record_shape(steps, "Keep all ages, 25-44, and 65+ rows", age, "Map age groups to population, 25-44, and 65+ cohorts.")
     age_panel = (
-        age.assign(cohort=age["Age group"].map(cohort_map))
-        .dropna(subset=["cohort"])
-        .groupby([geo_col, "year", "cohort"], as_index=False)[value_col]
+        age.groupby([geo_col, "year", "cohort"], as_index=False)[value_col]
         .sum()
         .pivot(index=[geo_col, "year"], columns="cohort", values=value_col)
         .reset_index()
         .rename_axis(None, axis=1)
     )
+    record_shape(steps, "Aggregate to CMA-year panel", age_panel, "One row per CMA-year after pivoting cohorts wide.")
     for col in ["population", "pop_25_44", "pop_65plus"]:
         if col not in age_panel.columns:
             age_panel[col] = np.nan
     age_panel = age_panel[age_panel["population"] > 0].copy()
     age_panel["share_25_44"] = age_panel["pop_25_44"] / age_panel["population"]
     age_panel["share_65plus"] = age_panel["pop_65plus"] / age_panel["population"]
-    return age_panel[[geo_col, "year", "share_25_44", "share_65plus", "population"]]
+    age_panel = age_panel[[geo_col, "year", "share_25_44", "share_65plus", "population"]]
+    record_shape(steps, "Final analytic panel", age_panel, "Keep the age shares and total population used downstream.")
+    return age_panel, pd.DataFrame(steps)
 
 def save_and_show(fig: plt.Figure, file_name: str):
     out_path = FIG_DIR / file_name
     fig.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.show()
     print(f"Saved figure: {out_path}")
+
+def record_shape(log: list[dict], step: str, df: pd.DataFrame, note: str = "") -> None:
+    log.append(
+        {
+            "step": step,
+            "shape": f"{df.shape[0]:,} x {df.shape[1]}",
+            "note": note,
+        }
+    )
 ```
 
 ```{python}
@@ -312,24 +327,33 @@ pop = df_pop.copy()
 geo_col, ref_col, value_col = GEO_COL, REF_COL, "VALUE"
 component_col, gender_col, age_col = "Components of population growth", "Gender", "Age group"
 target_components = {"net interprovincial migration": "Net interprovincial migration", "net intraprovincial migration": "Net intraprovincial migration"}
+pop_steps = []
+record_shape(pop_steps, "Start from cleaned df_pop", pop, "Step 1 already restricted df_pop to CMA rows and dropped shared metadata columns.")
 
 pop[value_col] = pd.to_numeric(pop[value_col], errors="coerce")
 pop["year"] = pop[ref_col].apply(extract_year).astype("Int64")
 component_key = pop[component_col].astype(str).str.strip().str.lower()
 pop = pop[component_key.isin(target_components)].copy()
+record_shape(pop_steps, "Keep target migration components", pop, "Keep only net interprovincial and net intraprovincial migration.")
 
 if gender_col in pop.columns:
     pop = pop[pop[gender_col] == "Total - gender"].copy()
+    record_shape(pop_steps, "Keep total gender", pop, "Keep 'Total - gender' rows only.")
 if age_col in pop.columns:
     pop = pop[pop[age_col] == "All ages"].copy()
+    record_shape(pop_steps, "Keep all ages", pop, "Keep 'All ages' rows only.")
     
 pop["component_clean"] = pop[component_col].astype(str).str.strip().str.lower().map(target_components)
 pop, _ = filter_to_analysis_window(pop, "year")
+record_shape(pop_steps, "Keep analysis years", pop, f"Restrict to {ANALYSIS_YEAR_START}-{ANALYSIS_YEAR_END_CAP}.")
 missing_pop_values = int(pop[value_col].isna().sum())
 pop = pop.dropna(subset=[value_col, "year"])
+record_shape(pop_steps, "Drop missing value/year rows", pop, "Remove rows with missing migration values or years.")
 
 pop_cma_year = pop.groupby([geo_col, "year", "component_clean"], as_index=False)[value_col].sum()
+record_shape(pop_steps, "Final analytic panel", pop_cma_year, "Aggregate to one row per CMA-year-component.")
 pop_nat = pop_cma_year.groupby(["year", "component_clean"], as_index=False)[value_col].sum()
+display(pd.DataFrame(pop_steps))
 
 g_ts = (
     p9.ggplot(pop_nat, p9.aes(x="year", y=value_col, color="component_clean"))
@@ -373,7 +397,7 @@ display(g_dist)
 n_units, n_years = int(pop_cma_year[geo_col].nunique()), int(pop_cma_year["year"].nunique())
 print(f"Unique CMAs: {n_units}")
 print(f"Number of years: {n_years}")
-print(f"Total rows after filtering: {len(pop_cma_year)}")
+print(f"Final analytic shape: {pop_cma_year.shape}")
 
 pop_year_min = int(pop_cma_year["year"].min()) if len(pop_cma_year) else np.nan
 pop_year_max = int(pop_cma_year["year"].max()) if len(pop_cma_year) else np.nan
@@ -396,13 +420,20 @@ availability_rows.append(
 rent = df_rent.copy()
 geo_col, ref_col, value_col = GEO_COL, REF_COL, "VALUE"
 structure_col = "Type of structure"
+rent_steps = []
+record_shape(rent_steps, "Start from cleaned df_rent", rent, "Step 1 already restricted df_rent to CMA rows and dropped shared metadata columns.")
 
 rent[value_col] = pd.to_numeric(rent[value_col], errors="coerce")
 rent["year"] = rent[ref_col].apply(extract_year).astype("Int64")
 rent = rent[rent[structure_col] == "Apartment structures of three units and over"].copy()
+record_shape(rent_steps, "Keep apartment structures", rent, "Keep 'Apartment structures of three units and over'.")
 rent = rent[rent[geo_col].astype(str).map(normalize_geo_key).isin(CMA_GEO_KEYS)].copy()
+record_shape(rent_steps, "Keep CMA rows in the reference list", rent, "Keep rows whose normalised geography matches the CMA reference set.")
 rent, rent_end_year = filter_to_analysis_window(rent, "year")
+record_shape(rent_steps, "Keep analysis years", rent, f"Restrict to {ANALYSIS_YEAR_START}-{ANALYSIS_YEAR_END_CAP} or latest available year.")
 rent = rent.dropna(subset=[value_col, "year"])
+record_shape(rent_steps, "Drop missing value/year rows", rent, "Remove rows with missing rent values or years.")
+display(pd.DataFrame(rent_steps))
 
 rent_ts = rent.groupby("year", as_index=False)[value_col].median().sort_values("year")
 g_rent_ts = (
@@ -430,6 +461,8 @@ window_years = list(range(ANALYSIS_YEAR_START, window_end + 1))
 rent_window = rent_pivot.reindex(columns=window_years)
 complete_count = int(rent_window.notna().all(axis=1).sum()) if len(rent_window) else 0
 print(f"CMAs with complete rent data ({ANALYSIS_YEAR_START}–{window_end}): {complete_count}")
+print(f"Final analytic shape (long table): {rent.shape}")
+print(f"Final analytic shape (CMA x year matrix): {rent_pivot.shape}")
 
 rent_year_min = int(rent["year"].min()) if len(rent) else np.nan
 rent_year_max = int(rent["year"].max()) if len(rent) else np.nan
@@ -453,6 +486,8 @@ availability_rows.append(
 # Build province-level unemployment and participation series from the labour force table.
 lfs = df_lfs.copy()
 geo_col, ref_col, value_col, metric_col = GEO_COL, REF_COL, "VALUE", "Labour force characteristics"
+lfs_steps = []
+record_shape(lfs_steps, "Start from cleaned df_lfs", lfs, "Step 1 dropped shared metadata columns but kept province and non-province rows.")
 lfs[value_col] = pd.to_numeric(lfs[value_col], errors="coerce")
 lfs["year"] = lfs[ref_col].apply(extract_year).astype("Int64")
 lfs = lfs[
@@ -461,8 +496,12 @@ lfs = lfs[
     & (lfs["Gender"] == "Total - Gender")
     & (lfs["Age group"] == "15 years and over")
 ].copy()
+record_shape(lfs_steps, "Keep province-level total rows", lfs, "Keep provinces, total education, total gender, and age 15 years and over.")
 lfs, _ = filter_to_analysis_window(lfs, "year")
+record_shape(lfs_steps, "Keep analysis years", lfs, f"Restrict to {ANALYSIS_YEAR_START}-{ANALYSIS_YEAR_END_CAP}.")
 lfs = lfs.dropna(subset=[value_col, "year"])
+record_shape(lfs_steps, "Drop missing value/year rows", lfs, "Remove rows with missing labour-force values or years.")
+display(pd.DataFrame(lfs_steps))
 
 series_specs = [
     ("Unemployment rate", "Unemployment rate", "Provincial Unemployment Rates (Annual)", "2c_lfs_provincial_unemployment_timeseries.png"),
@@ -490,10 +529,20 @@ for metric_label, y_label, title, fname in series_specs:
 
 lfs_unemp_ts = series_frames["Unemployment rate"]
 lfs_partic_ts = series_frames["Participation rate"]
+display(
+    pd.DataFrame(
+        [
+            {"series": "Unemployment rate", "shape": f"{lfs_unemp_ts.shape[0]:,} x {lfs_unemp_ts.shape[1]}"},
+            {"series": "Participation rate", "shape": f"{lfs_partic_ts.shape[0]:,} x {lfs_partic_ts.shape[1]}"},
+        ]
+    )
+)
 provinces_present = sorted(lfs_unemp_ts[geo_col].dropna().unique().tolist()) if len(lfs_unemp_ts) else []
 years_present = sorted(lfs_unemp_ts["year"].dropna().astype(int).unique().tolist()) if len(lfs_unemp_ts) else []
 print(provinces_present)
 print(f"Years covered: {years_present[0]}–{years_present[-1]}" if years_present else "Years covered: none")
+print(f"Final analytic shape (unemployment): {lfs_unemp_ts.shape}")
+print(f"Final analytic shape (participation): {lfs_partic_ts.shape}")
 lfs_year_min = int(min(years_present)) if years_present else np.nan
 lfs_year_max = int(max(years_present)) if years_present else np.nan
 missing_unemp_cells = int(lfs_unemp_ts.pivot(index=geo_col, columns="year", values=value_col).isna().sum().sum()) if len(lfs_unemp_ts) else 0
@@ -514,7 +563,10 @@ availability_rows.append(
 # Turn the age table into CMA-level age shares and total population, then plot the main patterns
 age = df_age.copy()
 geo_col, ref_col, value_col = GEO_COL, REF_COL, "VALUE"
-age_panel = build_age_feature_panel(age, geo_col=geo_col, ref_col=ref_col, value_col=value_col, year_min=ANALYSIS_YEAR_START, year_max=ANALYSIS_YEAR_END_CAP)
+age_steps = []
+record_shape(age_steps, "Start from cleaned df_age", age, "Step 1 already restricted df_age to CMA rows and dropped shared metadata columns.")
+age_panel, age_build_steps = build_age_feature_panel(age, geo_col=geo_col, ref_col=ref_col, value_col=value_col, year_min=ANALYSIS_YEAR_START, year_max=ANALYSIS_YEAR_END_CAP)
+display(pd.concat([pd.DataFrame(age_steps), age_build_steps], ignore_index=True))
 if len(age_panel) == 0:
     raise ValueError("Age panel extraction returned no rows for df_age.")
 
@@ -558,6 +610,7 @@ age_year_min = int(age_panel["year"].min()) if len(age_panel) else np.nan
 age_year_max = int(age_panel["year"].max()) if len(age_panel) else np.nan
 print(f"Number of CMAs: {n_age_units}")
 print(f"Year range: {age_year_min}–{age_year_max}")
+print(f"Final analytic shape: {age_panel.shape}")
 
 availability_rows.append(
     {
@@ -580,6 +633,8 @@ availability_rows.append(
 # Keep the province-level R&D totals and plot how they change over time
 rd = df_rd.copy()
 geo_col, ref_col, value_col = GEO_COL, REF_COL, "VALUE"
+rd_steps = []
+record_shape(rd_steps, "Start from cleaned df_rd", rd, "Step 1 dropped shared metadata columns but kept province and non-province rows.")
 rd[value_col] = pd.to_numeric(rd[value_col], errors="coerce")
 rd["year"] = rd[ref_col].apply(extract_year).astype("Int64")
 rd = rd[
@@ -589,8 +644,12 @@ rd = rd[
     & (rd["Science type"] == "Total sciences")
     & (rd["Prices"] == "Current prices")
 ].copy()
+record_shape(rd_steps, "Keep province-level total R&D rows", rd, "Keep provinces, total funder, total performer, total sciences, and current prices.")
 rd, _ = filter_to_analysis_window(rd, "year")
+record_shape(rd_steps, "Keep analysis years", rd, f"Restrict to {ANALYSIS_YEAR_START}-{ANALYSIS_YEAR_END_CAP}.")
 rd = rd.dropna(subset=[value_col, "year"])
+record_shape(rd_steps, "Drop missing value/year rows", rd, "Remove rows with missing R&D values or years.")
+display(pd.DataFrame(rd_steps))
 
 rd_ts = rd.groupby([geo_col, "year"], as_index=False)[value_col].mean().sort_values([geo_col, "year"])
 g_rd = (
@@ -610,6 +669,7 @@ has_cma_rows_anywhere = bool(df_rd[GEO_COL].astype(str).str.contains(r"\(CMA\)",
 print(rd_provinces)
 print(f"Year range: {rd_year_min}–{rd_year_max}")
 print(f"Any CMA-level rows detected in raw df_rd: {has_cma_rows_anywhere}")
+print(f"Final analytic shape: {rd_ts.shape}")
 
 availability_rows.append(
     {
@@ -632,6 +692,42 @@ availability_df = pd.DataFrame(
 )
 
 display(availability_df)
+
+analytic_df_summary = pd.DataFrame(
+    [
+        {
+            "dataset": "df_pop",
+            "analytic_shape": str(pop_cma_year.shape),
+            "unique_cmas_covered": int(pop_cma_year[GEO_COL].nunique()),
+            "years_covered": f"{int(pop_cma_year['year'].min())}–{int(pop_cma_year['year'].max())}",
+        },
+        {
+            "dataset": "df_rent",
+            "analytic_shape": str(rent.shape),
+            "unique_cmas_covered": int(rent[GEO_COL].nunique()),
+            "years_covered": f"{int(rent['year'].min())}–{int(rent['year'].max())}",
+        },
+        {
+            "dataset": "df_lfs",
+            "analytic_shape": str(lfs_unemp_ts.shape),
+            "unique_cmas_covered": "Province-level only",
+            "years_covered": f"{int(lfs_unemp_ts['year'].min())}–{int(lfs_unemp_ts['year'].max())}",
+        },
+        {
+            "dataset": "df_age",
+            "analytic_shape": str(age_panel.shape),
+            "unique_cmas_covered": int(age_panel[GEO_COL].nunique()),
+            "years_covered": f"{int(age_panel['year'].min())}–{int(age_panel['year'].max())}",
+        },
+        {
+            "dataset": "df_rd",
+            "analytic_shape": str(rd_ts.shape),
+            "unique_cmas_covered": "Province-level only",
+            "years_covered": f"{int(rd_ts['year'].min())}–{int(rd_ts['year'].max())}",
+        },
+    ]
+)
+display(analytic_df_summary)
 ```
 
 ### Null count by dataset
@@ -788,7 +884,7 @@ rent_panel = (
 )
 
 # 3c.3 - df_age -> share_25_44, share_65plus, population
-age_panel = build_age_feature_panel(
+age_panel, _ = build_age_feature_panel(
     age_cma,
     geo_col=age_geo_col,
     ref_col=age_ref_col,
@@ -1150,9 +1246,9 @@ def summarize_frame(df: pd.DataFrame) -> pd.DataFrame:
 summary_train_df = summarize_frame(eda)
 summary_test_df = summarize_frame(test_eda)
 
-print("4a — Train summary stats")
+print("Train summary statistics")
 display(summary_train_df)
-print("4a — Test summary stats")
+print("Test summary statistics")
 display(summary_test_df)
 
 # 4b) Spearman correlation heatmap.
@@ -1179,7 +1275,7 @@ g_corr = (
     + p9.geom_tile()
     + p9.geom_text(p9.aes(label="label"), size=6)
     + p9.scale_fill_gradient2(low="#3B4CC0", mid="white", high="#B40426", midpoint=0, limits=(-1, 1))
-    + p9.labs(title="Step 4: Spearman Correlation Heatmap (Train 2001–2018)", x="", y="", fill="rho")
+    + p9.labs(title="Spearman Correlation Heatmap (Train 2001–2018)", x="", y="", fill="rho")
     + p9.theme_minimal()
     + p9.theme(figure_size=(11, 9), axis_text_x=p9.element_text(rotation=60, ha="right"))
 )
@@ -1192,9 +1288,9 @@ if pop_ref.empty:
     pop_ref = eda.groupby("geo_key")["population"].median().dropna()
 q1, q2 = pop_ref.quantile([1 / 3, 2 / 3]).astype(float)
 size_map = {k: ("Small" if v <= q1 else "Medium" if v <= q2 else "Large") for k, v in pop_ref.items()}
-eda["cma_size"] = eda["geo_key"].map(size_map).fillna("Unknown")
-size_order = ["Small", "Medium", "Large", "Unknown"]
-size_colors = {"Small": "#4E79A7", "Medium": "#59A14F", "Large": "#E15759", "Unknown": "#9C755F"}
+eda["cma_size"] = eda["geo_key"].map(size_map)
+size_order = ["Small", "Medium", "Large"]
+size_colors = {"Small": "#4E79A7", "Medium": "#59A14F", "Large": "#E15759"}
 print(f"CMA size cutoffs: Small <= {q1:,.0f}; Medium <= {q2:,.0f}; Large > {q2:,.0f}")
 
 # 4c) Net migration time-series by size category (faceted)
@@ -1210,7 +1306,7 @@ g_4c = (
     + p9.geom_hline(yintercept=0, linetype="dashed", color="gray")
     + p9.facet_wrap("~metric", ncol=2, scales="free_y")
     + p9.scale_color_manual(values=size_colors, limits=size_order)
-    + p9.labs(title="Step 4: Net Migration by CMA Size Category (Train 2001–2018)", x="Year", y="Mean migration", color="Size group")
+    + p9.labs(title="Net Migration by CMA Size Category (Train 2001–2018)", x="Year", y="Mean migration", color="Size group")
     + p9.theme_minimal()
     + p9.theme(figure_size=(14, 5))
 )
@@ -1228,7 +1324,7 @@ panel_for_shift = (
     (panel if "panel" in globals() else pd.read_csv(PROJECT_ROOT / "data" / "processed" / "panel_cma.csv"))
     .loc[lambda d: d["geo_type"].eq("CMA")]
     .assign(
-        cma_size=lambda d: d["geo_key"].map(size_map).fillna("Unknown"),
+        cma_size=lambda d: d["geo_key"].map(size_map),
         period_group=lambda d: np.select(
             [d["year"] <= 2018, d["year"] == 2019, d["year"] >= 2020],
             period_labels,
@@ -1264,7 +1360,7 @@ g_4d = (
         "Transition\n(2019)": "#F28E2B",
         "COVID/Post\n(2020-2024)": "#E15759",
     })
-    + p9.labs(title="Step 4: Distribution Shift by Period, Faceted by CMA Size", x="", y="Migration")
+    + p9.labs(title="Distribution Shift by Period, Faceted by CMA Size", x="", y="Migration")
     + p9.theme_minimal(base_size=14)
     + p9.theme(
         figure_size=(16, 10),
@@ -1279,7 +1375,57 @@ g_4d = (
 p9.ggsave(g_4d, filename=str(FIG_DIR / "4d_migration_distribution_shift_pre_covid_post.png"), width=16, height=10, units="in", dpi=220, verbose=False)
 display(g_4d)
 
-# 4e) top/bottom unit trends by avg rate of change (intra + inter)
+period_summary = (
+    shift_long.groupby(["metric", "cma_size", "period_group"], as_index=False)["migration"]
+    .agg(
+        n="size",
+        mean="mean",
+        median="median",
+        sd="std",
+        q1=lambda s: s.quantile(0.25),
+        q3=lambda s: s.quantile(0.75),
+    )
+    .assign(
+        iqr=lambda d: d["q3"] - d["q1"],
+        cma_size=lambda d: pd.Categorical(d["cma_size"], categories=size_order, ordered=True),
+        period_group=lambda d: pd.Categorical(d["period_group"], categories=period_labels, ordered=True),
+    )
+    .sort_values(["metric", "cma_size", "period_group"])
+    .reset_index(drop=True)
+)
+display(period_summary)
+period_summary.to_csv(tables_dir / "4d_period_summary_by_cma_size.csv", index=False)
+
+# 4e) CMA-level share_65plus vs migration scatterplots
+share65_scatter = (
+    eda.melt(
+        id_vars=["share_65plus", "cma_size"],
+        value_vars=["net_interprovincial", "net_intraprovincial"],
+        var_name="metric",
+        value_name="migration",
+    )
+    .dropna(subset=["share_65plus", "migration"])
+    .assign(metric=lambda d: d["metric"].map(metric_labels))
+)
+g_4e = (
+    p9.ggplot(share65_scatter, p9.aes(x="share_65plus", y="migration", color="cma_size"))
+    + p9.geom_point(alpha=0.55, size=1.8)
+    + p9.geom_smooth(method="lm", se=False, size=0.9)
+    + p9.facet_wrap("~metric", ncol=2, scales="free_y")
+    + p9.scale_color_manual(values=size_colors, limits=size_order)
+    + p9.labs(
+        title="share_65plus vs Net Migration (Train 2001–2018)",
+        x="Share of population aged 65+",
+        y="Migration",
+        color="Size group",
+    )
+    + p9.theme_minimal(base_size=13)
+    + p9.theme(figure_size=(13, 5.4))
+)
+p9.ggsave(g_4e, filename=str(FIG_DIR / "4e_share_65plus_vs_migration_train.png"), width=13, height=5.4, units="in", dpi=180, verbose=False)
+display(g_4e)
+
+# 4f) top/bottom unit trends by avg rate of change (intra + inter)
 def make_top_bottom_slope_plot(outcome: str, out_png: str, out_csv: str, title: str) -> None:
     slopes = (
         eda.dropna(subset=[outcome])
@@ -1289,15 +1435,30 @@ def make_top_bottom_slope_plot(outcome: str, out_png: str, out_csv: str, title: 
             lambda g: pd.Series(
                 {
                     "geo_name": g["geo_name"].dropna().iloc[0] if g["geo_name"].notna().any() else g.name,
+                    "province": g["province"].dropna().iloc[0] if g["province"].notna().any() else np.nan,
+                    "cma_size": g["cma_size"].dropna().iloc[0] if g["cma_size"].notna().any() else np.nan,
                     "n": len(g),
+                    "mean_population_train": g["population"].mean(),
                     "slope": float(np.polyfit(g["year"], g[outcome], 1)[0]),
+                    "start_year": int(g["year"].min()),
+                    "end_year": int(g["year"].max()),
+                    "start_value": float(g.sort_values("year")[outcome].iloc[0]),
+                    "end_value": float(g.sort_values("year")[outcome].iloc[-1]),
                 }
             )
         )
         .reset_index(drop=True)
     )
-    slopes = slopes.loc[lambda d: d["n"] >= 5].sort_values("slope").reset_index(drop=True)
-    selected = pd.concat([slopes.head(5), slopes.tail(5)], ignore_index=True) if len(slopes) >= 10 else slopes.copy()
+    slopes = (
+        slopes.loc[lambda d: d["n"] >= 5]
+        .assign(absolute_change=lambda d: d["end_value"] - d["start_value"])
+        .sort_values("slope")
+        .reset_index(drop=True)
+    )
+    selected = pd.concat(
+        [slopes.head(5).assign(rank_group="Bottom 5"), slopes.tail(5).assign(rank_group="Top 5")],
+        ignore_index=True,
+    ) if len(slopes) >= 10 else slopes.assign(rank_group="Selected").copy()
     selected["facet_label"] = selected["geo_name"] + "\nAvg rate of change=" + selected["slope"].round(2).map("{:.2f}".format)
 
     plot_df = (
@@ -1319,25 +1480,42 @@ def make_top_bottom_slope_plot(outcome: str, out_png: str, out_csv: str, title: 
     )
     p9.ggsave(g, filename=str(FIG_DIR / out_png), width=14, height=6, units="in", dpi=180, verbose=False)
     display(g)
-    slopes.to_csv(tables_dir / out_csv, index=False)
+    selected_table = (
+        selected[["rank_group", "geo_name", "province", "cma_size", "mean_population_train", "slope", "start_year", "start_value", "end_year", "end_value", "absolute_change"]]
+        .rename(
+            columns={
+                "geo_name": "cma",
+                "cma_size": "size",
+                "mean_population_train": "mean_population_train",
+                "slope": "avg_rate_of_change",
+                "start_value": f"value_{selected['start_year'].min()}",
+                "end_value": f"value_{selected['end_year'].max()}",
+            }
+        )
+        .assign(mean_population_train=lambda d: d["mean_population_train"].round(0).astype("Int64"))
+        .sort_values(["rank_group", "avg_rate_of_change"], ascending=[True, False])
+        .reset_index(drop=True)
+    )
+    display(selected_table)
+    selected_table.to_csv(tables_dir / out_csv, index=False)
 
 make_top_bottom_slope_plot(
     "net_intraprovincial",
-    "4e_unit_trends_top_bottom_intraprov_slopes_train.png",
-    "4e_unit_intraprov_slopes_train.csv",
-    "Step 4: Top/Bottom Unit Trends in Net Intraprovincial Migration (Train, avg rate of change)",
+    "4f_unit_trends_top_bottom_intraprov_slopes_train.png",
+    "4f_unit_intraprov_slopes_train.csv",
+    "Top/Bottom Unit Trends in Net Intraprovincial Migration (Train, avg rate of change)",
 )
 make_top_bottom_slope_plot(
     "net_interprovincial",
-    "4e_unit_trends_top_bottom_interprov_slopes_train.png",
-    "4e_unit_interprov_slopes_train.csv",
-    "Step 4: Top/Bottom Unit Trends in Net Interprovincial Migration (Train, avg rate of change)",
+    "4f_unit_trends_top_bottom_interprov_slopes_train.png",
+    "4f_unit_interprov_slopes_train.csv",
+    "Top/Bottom Unit Trends in Net Interprovincial Migration (Train, avg rate of change)",
 )
 
-# 4f) Train-set missingness 
+# 4g) Train-set missingness 
 print(eda.isnull().sum())
 
-# 4g) VIF check on train features
+# 4h) VIF check on train features
 from statsmodels.stats.outliers_influence import variance_inflation_factor
 vif_features = ["avg_rent", "rent_deviation", "unemployment_rate", "participation_rate", "share_25_44", "share_65plus", "log_population", "intl_inmigration", "natural_increase_rate", "rd_provincial", "cma_size"]
 X = (
@@ -1349,6 +1527,7 @@ vif_df = pd.DataFrame(
     {"feature": X.columns, "vif": [float(variance_inflation_factor(X.values, i)) for i in range(X.shape[1])]}
 ).sort_values("vif", ascending=False)
 display(vif_df)
+vif_df.to_csv(tables_dir / "4h_vif_full_train.csv", index=False)
 ```
 
 ## Step 5 — RQ1: Linear Models with Time-Series CV
@@ -1366,7 +1545,7 @@ import statsmodels.formula.api as smf
 train_model = train.assign(cma_size=train["geo_key"].map(size_map).fillna("Unknown"))
 test_model = test.assign(cma_size=test["geo_key"].map(size_map).fillna("Unknown"))
 
-base_feats = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "cma_size"]
+base_feats = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "cma_size", "year"]
 outcome_specs = [
     ("net_interprovincial", base_feats + ["rd_provincial"]),
     ("net_intraprovincial", base_feats),
@@ -1415,7 +1594,7 @@ candidate_models = {
 step5_vif_frames = []
 model_rows = []
 for outcome, feats in outcome_specs:
-    cols = ["year", outcome] + feats
+    cols = [outcome] + feats
     tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
     te = test_model[cols].dropna().sort_values("year").reset_index(drop=True)
     X_train, y_train = tr[feats], tr[outcome]
@@ -1483,6 +1662,8 @@ step5_vif_df = pd.concat(step5_vif_frames, ignore_index=True).sort_values(["outc
 model_results_df = pd.DataFrame(model_rows).sort_values(["outcome", "cv_rmse_mean", "model"]).reset_index(drop=True)
 display(step5_vif_df)
 display(model_results_df)
+step5_vif_df.to_csv(tables_dir / "5_reduced_vif.csv", index=False)
+model_results_df.to_csv(tables_dir / "5_model_results.csv", index=False)
 
 # Train-set OLS summaries for interpretation; CV selection above is unchanged.
 for outcome, feats in outcome_specs:

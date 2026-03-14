@@ -1,0 +1,79 @@
+@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+
+body {
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+.table-caption {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1.25rem 0 0.65rem 0;
+}
+
+table.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.75rem 0;
+  font-size: 0.92rem;
+}
+
+table.report-table thead th {
+  text-align: left;
+  font-weight: 700;
+  padding: 0.8rem 0.6rem;
+  border-top: 1px solid #d4d8dd;
+  border-bottom: 1px solid #9ea4ab;
+}
+
+table.report-table tbody td {
+  padding: 0.8rem 0.6rem;
+  border-bottom: 1px solid #d4d8dd;
+  vertical-align: top;
+}
+
+table.report-table td.num,
+table.report-table th.num {
+  text-align: right;
+}
+
+table.report-table tr.group-gap td {
+  padding: 0.6rem 0;
+  border-bottom: none;
+}
+
+table.report-table tr.group-gap td::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid #d4d8dd;
+  margin-top: 0.2rem;
+}
+
+.table-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.table-panel {
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.table-panel .report-table {
+  min-width: 42rem;
+}
+
+.table-panel-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0 0 0.6rem 0;
+}
+
+@media (max-width: 900px) {
+  .table-grid {
+    grid-template-columns: 1fr;
+  }
+}

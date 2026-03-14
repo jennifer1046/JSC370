@@ -1,0 +1,11 @@
+rank_group,cma,province,size,mean_population_train,avg_rate_of_change,start_year,value_2001,end_year,value_2018,absolute_change
+Bottom 5,"Regina (CMA), Saskatchewan",Saskatchewan,Medium,218564,-56.03095975232244,2001,-2113.0,2018,-3250.0,-1137.0
+Bottom 5,"Winnipeg (CMA), Manitoba",Manitoba,Large,749522,-125.65015479876027,2001,-2681.0,2018,-5603.0,-2922.0
+Bottom 5,"MontrÃ©al (CMA), Quebec",Quebec,Large,3932684,-137.01547987615925,2001,-4267.0,2018,-4342.0,-75.0
+Bottom 5,"Edmonton (CMA), Alberta",Alberta,Large,1177794,-276.3849329205389,2001,6482.0,2018,-530.0,-7012.0
+Bottom 5,"Calgary (CMA), Alberta",Alberta,Large,1231406,-548.8544891640909,2001,9015.0,2018,104.0,-8911.0
+Top 5,"Toronto (CMA), Ontario",Ontario,Large,5619466,406.45304437565403,2001,2415.0,2018,2721.0,306.0
+Top 5,"Vancouver (CMA), British Columbia",British Columbia,Large,2338010,266.2074303405514,2001,-3361.0,2018,3344.0,6705.0
+Top 5,"Ottawa - Gatineau (CMA), Ontario/Quebec",Ontario,Large,1304341,101.11971104231247,2001,3245.0,2018,4028.0,783.0
+Top 5,"Victoria (CMA), British Columbia",British Columbia,Medium,354121,99.90402476780098,2001,701.0,2018,2990.0,2289.0
+Top 5,"Halifax (CMA), Nova Scotia",Nova Scotia,Large,419416,76.26109391124963,2001,362.0,2018,1726.0,1364.0
