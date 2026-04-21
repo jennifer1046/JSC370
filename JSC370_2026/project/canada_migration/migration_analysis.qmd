@@ -1105,6 +1105,11 @@ for col, source_df in diag_specs.items():
         print(res["cause_b_keys"])
 diag_results_df = pd.DataFrame(diag_results)
 display(diag_results_df[["col", "total_nan", "cause_a", "cause_b", "cause_c"]])
+# Persist the NaN attribution table so the final report can cite Cause A/B/C counts directly.
+(PROJECT_ROOT / "outputs" / "tables").mkdir(parents=True, exist_ok=True)
+diag_results_df[["col", "total_nan", "cause_a", "cause_b", "cause_c"]].to_csv(
+    PROJECT_ROOT / "outputs" / "tables" / "3_nan_diagnosis.csv", index=False
+)
 
 print("\nTask 2a1 — manual CMA drop for persistent rent Cause-B mismatches")
 MANUAL_DROP_CMA_KEYS = [
@@ -1212,6 +1217,46 @@ train.to_csv(train_out, index=False)
 test.to_csv(test_out, index=False)
 ```
 
+## Step 3.5 — Rate Target Construction (per 1,000 population)
+```{python}
+#| label: step3-5-rate-target
+# Net migration counts scale with population, which (a) violates OLS homoscedasticity
+# and (b) lets Toronto dominate the loss across the 40-CMA panel. Switching the target
+# to net migration per 1,000 residents is the standard demographic normalisation and
+# makes coefficients interpretable per-capita. log_population remains in the feature
+# set because rate magnitudes themselves correlate with urban scale.
+if "panel" not in globals():
+    panel = pd.read_csv(PROJECT_ROOT / "data" / "processed" / "panel_cma.csv")
+if "train" not in globals():
+    train = pd.read_csv(PROJECT_ROOT / "data" / "processed" / "train.csv")
+if "test" not in globals():
+    test = pd.read_csv(PROJECT_ROOT / "data" / "processed" / "test.csv")
+
+RATE_COLS = ["net_interprovincial_rate", "net_intraprovincial_rate"]
+for frame in (panel, train, test):
+    frame["net_interprovincial_rate"] = frame["net_interprovincial"] / frame["population"] * 1000.0
+    frame["net_intraprovincial_rate"] = frame["net_intraprovincial"] / frame["population"] * 1000.0
+
+panel.to_csv(PROJECT_ROOT / "data" / "processed" / "panel_cma.csv", index=False)
+train.to_csv(PROJECT_ROOT / "data" / "processed" / "train.csv", index=False)
+test.to_csv(PROJECT_ROOT / "data" / "processed" / "test.csv", index=False)
+
+rate_summary = pd.DataFrame({
+    "outcome": RATE_COLS,
+    "train_mean": [train[c].mean() for c in RATE_COLS],
+    "train_sd": [train[c].std() for c in RATE_COLS],
+    "train_min": [train[c].min() for c in RATE_COLS],
+    "train_max": [train[c].max() for c in RATE_COLS],
+    "test_mean": [test[c].mean() for c in RATE_COLS],
+    "test_sd": [test[c].std() for c in RATE_COLS],
+    "test_min": [test[c].min() for c in RATE_COLS],
+    "test_max": [test[c].max() for c in RATE_COLS],
+})
+print("Step 3.5 — rate target summary (per 1,000 residents)")
+display(rate_summary.round(3))
+rate_summary.to_csv(PROJECT_ROOT / "outputs" / "tables" / "3_5_rate_target_summary.csv", index=False)
+```
+
 ## Step 4 — Post-Merge EDA (Train Set: 2001–2018)
 ```{python}
 #| label: step4-post-merge-eda
@@ -1231,7 +1276,7 @@ tables_dir = PROJECT_ROOT / "outputs" / "tables"
 os.makedirs(tables_dir, exist_ok=True)
 
 # 4a) Summary statistics table (train and test shown separately)
-summary_cols = ["net_interprovincial", "net_intraprovincial", "avg_rent", "rent_deviation", "unemployment_rate", "participation_rate", "share_25_44", "share_65plus", "population", "log_population", "intl_inmigration", "natural_increase_rate", "rd_provincial"]
+summary_cols = ["net_interprovincial", "net_intraprovincial", "net_interprovincial_rate", "net_intraprovincial_rate", "avg_rent", "rent_deviation", "unemployment_rate", "participation_rate", "share_25_44", "share_65plus", "population", "log_population", "intl_inmigration", "natural_increase_rate", "rd_provincial"]
 
 def summarize_frame(df: pd.DataFrame) -> pd.DataFrame:
     out = (
@@ -1250,12 +1295,14 @@ print("Train summary statistics")
 display(summary_train_df)
 print("Test summary statistics")
 display(summary_test_df)
+summary_train_df.to_csv(tables_dir / "4a_train_summary_stats.csv", index=False)
+summary_test_df.to_csv(tables_dir / "4a_test_summary_stats.csv", index=False)
 
 # 4b) Spearman correlation heatmap.
-corr_cols = ["net_interprovincial", "net_intraprovincial", "avg_rent", "rent_deviation", "unemployment_rate", "participation_rate", "share_25_44", "share_65plus", "log_population", "intl_inmigration", "natural_increase_rate", "rd_provincial"]
+corr_cols = ["net_interprovincial_rate", "net_intraprovincial_rate", "avg_rent", "rent_deviation", "unemployment_rate", "participation_rate", "share_25_44", "share_65plus", "log_population", "intl_inmigration", "natural_increase_rate", "rd_provincial"]
 metric_labels = {
-    "net_interprovincial": "Net interprovincial migration",
-    "net_intraprovincial": "Net intraprovincial migration",
+    "net_interprovincial_rate": "Net interprov. rate (per 1,000)",
+    "net_intraprovincial_rate": "Net intraprov. rate (per 1,000)",
 }
 
 corr_long = (
@@ -1293,9 +1340,9 @@ size_order = ["Small", "Medium", "Large"]
 size_colors = {"Small": "#4E79A7", "Medium": "#59A14F", "Large": "#E15759"}
 print(f"CMA size cutoffs: Small <= {q1:,.0f}; Medium <= {q2:,.0f}; Large > {q2:,.0f}")
 
-# 4c) Net migration time-series by size category (faceted)
+# 4c) Net migration rate time-series by size category (faceted)
 ts_long = (
-    eda.groupby(["year", "cma_size"], as_index=False)[["net_interprovincial", "net_intraprovincial"]]
+    eda.groupby(["year", "cma_size"], as_index=False)[["net_interprovincial_rate", "net_intraprovincial_rate"]]
     .mean()
     .melt(id_vars=["year", "cma_size"], var_name="metric", value_name="value")
     .assign(metric=lambda d: d["metric"].map(metric_labels))
@@ -1306,7 +1353,7 @@ g_4c = (
     + p9.geom_hline(yintercept=0, linetype="dashed", color="gray")
     + p9.facet_wrap("~metric", ncol=2, scales="free_y")
     + p9.scale_color_manual(values=size_colors, limits=size_order)
-    + p9.labs(title="Net Migration by CMA Size Category (Train 2001–2018)", x="Year", y="Mean migration", color="Size group")
+    + p9.labs(title="Net Migration Rate by CMA Size Category (Train 2001–2018)", x="Year", y="Mean rate (per 1,000)", color="Size group")
     + p9.theme_minimal()
     + p9.theme(figure_size=(14, 5))
 )
@@ -1336,7 +1383,7 @@ shift_long = (
     panel_for_shift.dropna(subset=["period_group"])
     .melt(
         id_vars=["cma_size", "period_group"],
-        value_vars=["net_interprovincial", "net_intraprovincial"],
+        value_vars=["net_interprovincial_rate", "net_intraprovincial_rate"],
         var_name="metric",
         value_name="migration",
     )
@@ -1360,7 +1407,7 @@ g_4d = (
         "Transition\n(2019)": "#F28E2B",
         "COVID/Post\n(2020-2024)": "#E15759",
     })
-    + p9.labs(title="Distribution Shift by Period, Faceted by CMA Size", x="", y="Migration")
+    + p9.labs(title="Distribution Shift by Period, Faceted by CMA Size", x="", y="Migration rate (per 1,000)")
     + p9.theme_minimal(base_size=14)
     + p9.theme(
         figure_size=(16, 10),
@@ -1396,11 +1443,11 @@ period_summary = (
 display(period_summary)
 period_summary.to_csv(tables_dir / "4d_period_summary_by_cma_size.csv", index=False)
 
-# 4e) CMA-level share_65plus vs migration scatterplots
+# 4e) CMA-level share_65plus vs migration rate scatterplots
 share65_scatter = (
     eda.melt(
         id_vars=["share_65plus", "cma_size"],
-        value_vars=["net_interprovincial", "net_intraprovincial"],
+        value_vars=["net_interprovincial_rate", "net_intraprovincial_rate"],
         var_name="metric",
         value_name="migration",
     )
@@ -1414,9 +1461,9 @@ g_4e = (
     + p9.facet_wrap("~metric", ncol=2, scales="free_y")
     + p9.scale_color_manual(values=size_colors, limits=size_order)
     + p9.labs(
-        title="share_65plus vs Net Migration (Train 2001–2018)",
+        title="share_65plus vs Net Migration Rate (Train 2001–2018)",
         x="Share of population aged 65+",
-        y="Migration",
+        y="Migration rate (per 1,000)",
         color="Size group",
     )
     + p9.theme_minimal(base_size=13)
@@ -1500,16 +1547,16 @@ def make_top_bottom_slope_plot(outcome: str, out_png: str, out_csv: str, title: 
     selected_table.to_csv(tables_dir / out_csv, index=False)
 
 make_top_bottom_slope_plot(
-    "net_intraprovincial",
+    "net_intraprovincial_rate",
     "4f_unit_trends_top_bottom_intraprov_slopes_train.png",
     "4f_unit_intraprov_slopes_train.csv",
-    "Top/Bottom Unit Trends in Net Intraprovincial Migration (Train, avg rate of change)",
+    "Top/Bottom Unit Trends in Net Intraprovincial Migration Rate per 1,000 (Train)",
 )
 make_top_bottom_slope_plot(
-    "net_interprovincial",
+    "net_interprovincial_rate",
     "4f_unit_trends_top_bottom_interprov_slopes_train.png",
     "4f_unit_interprov_slopes_train.csv",
-    "Top/Bottom Unit Trends in Net Interprovincial Migration (Train, avg rate of change)",
+    "Top/Bottom Unit Trends in Net Interprovincial Migration Rate per 1,000 (Train)",
 )
 
 # 4g) Train-set missingness 
@@ -1530,27 +1577,35 @@ display(vif_df)
 vif_df.to_csv(tables_dir / "4h_vif_full_train.csv", index=False)
 ```
 
-## Step 5 — RQ1: Linear Models with Time-Series CV
+## Step 5 — RQ1 Prediction: Full Model Suite on Rate Target
 ```{python}
-#| label: step5-rq1-ols
-# Compare OLS, Ridge, and Lasso with time-based CV, then print the OLS summaries for interpretation.
+#| label: step5a-setup
+# Shared setup for the six-model comparison (OLS / Ridge / Lasso / GAM / RandomForest / XGBoost).
+# All models target the per-1,000 migration rate and share the same time-based CV folds.
+import warnings
 from sklearn.base import clone
 from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.linear_model import Lasso, LinearRegression, Ridge
-from sklearn.model_selection import GridSearchCV, TimeSeriesSplit
+from sklearn.model_selection import GridSearchCV, RandomizedSearchCV, TimeSeriesSplit
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from xgboost import XGBRegressor
+from pygam import LinearGAM, l, s
 import statsmodels.formula.api as smf
 
 train_model = train.assign(cma_size=train["geo_key"].map(size_map).fillna("Unknown"))
 test_model = test.assign(cma_size=test["geo_key"].map(size_map).fillna("Unknown"))
 
-base_feats = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "cma_size", "year"]
+# log_population is kept as a predictor after the rate switch: rate magnitudes still
+# correlate with urban scale, and dropping it would forfeit that signal.
+base_feats = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "log_population", "cma_size", "year"]
 outcome_specs = [
-    ("net_interprovincial", base_feats + ["rd_provincial"]),
-    ("net_intraprovincial", base_feats),
+    ("net_interprovincial_rate", base_feats + ["rd_provincial"]),
+    ("net_intraprovincial_rate", base_feats),
 ]
 alpha_grid = np.logspace(-3, 2, 25)
+RNG = 42
 
 def score_regression(y_true, y_pred):
     y_true = np.asarray(y_true, dtype=float)
@@ -1573,6 +1628,10 @@ def make_year_splits(df, n_splits=5):
     return splits
 
 def build_pipeline(feats, model):
+    # Clone the model so each returned pipeline owns an independent estimator.
+    # Without this, the shared instance from `candidate_models` is mutated in
+    # place by the untuned OLS fit, and fitted_models retrievals later see the
+    # latest fit, not theirs (see docs/bugs-and-fixes.md #1).
     num_feats = [f for f in feats if f != "cma_size"]
     cat_feats = [f for f in feats if f == "cma_size"]
     preprocessor = ColumnTransformer(
@@ -1582,17 +1641,50 @@ def build_pipeline(feats, model):
         ],
         remainder="drop",
     )
-    return Pipeline([("preprocessor", preprocessor), ("model", model)])
+    return Pipeline([("preprocessor", preprocessor), ("model", clone(model))])
 
-# All three candidates are scored on the same 5 time-based folds.
+# Search space. RF and XGBoost use RandomizedSearchCV to keep the budget bounded;
+# OLS has no tuning parameter; Ridge/Lasso grid-search alpha.
+#
+# Parallelism policy (conservative to avoid OOM on laptop-class machines):
+#   * RandomForest n_jobs is capped at 2 because sklearn RF uses joblib/loky
+#     (multiprocess on macOS), and each worker re-imports numpy/sklearn → ~500MB
+#     resident. n_jobs=-1 on 8 cores = ~4GB just for workers, which was the
+#     actual OOM trigger in earlier runs. 2 workers = ~1GB, safe.
+#   * XGBoost n_jobs=-1 is safe because XGBoost parallelises via OpenMP threads
+#     (shared memory), not processes.
+#   * Outer searches (RandomizedSearchCV / GridSearchCV) use n_jobs=1 below
+#     (fully serial outer loop); each inner fit still uses the estimator's own
+#     threading budget above.
 candidate_models = {
-    "OLS": (LinearRegression(), None),
-    "Ridge": (Ridge(), {"model__alpha": alpha_grid}),
-    "Lasso": (Lasso(max_iter=20000), {"model__alpha": alpha_grid}),
+    "OLS":      (LinearRegression(),                   None),
+    "Ridge":    (Ridge(),                              {"model__alpha": alpha_grid}),
+    "Lasso":    (Lasso(max_iter=20000),                {"model__alpha": alpha_grid}),
+    "RandomForest": (RandomForestRegressor(random_state=RNG, n_jobs=2),
+                     {"model__n_estimators":     [200, 400, 600, 800],
+                      "model__max_depth":        [3, 5, 8, 12, None],
+                      "model__max_features":     ["sqrt", "log2", 0.5, 0.8],
+                      "model__min_samples_leaf": [1, 2, 5, 10]}),
+    "XGBoost":  (XGBRegressor(random_state=RNG, n_jobs=-1, tree_method="hist",
+                              objective="reg:squarederror", verbosity=0),
+                 {"model__n_estimators":     [200, 400, 600, 1000],
+                  "model__max_depth":        [3, 5, 7, 9],
+                  "model__learning_rate":    [0.01, 0.03, 0.05, 0.1],
+                  "model__subsample":        [0.6, 0.8, 1.0],
+                  "model__colsample_bytree": [0.6, 0.8, 1.0]}),
 }
+RANDOMIZED = {"RandomForest", "XGBoost"}
+N_ITER_RANDOM = 30
+SEARCH_N_JOBS = 1  # serial outer loop — see parallelism policy above
+```
 
+```{python}
+#| label: step5b-fit-sklearn-models
+# Fit OLS / Ridge / Lasso / RandomForest / XGBoost per outcome with time-based CV.
 step5_vif_frames = []
 model_rows = []
+fitted_models = {}  # {(outcome, model_name): fitted_estimator}; consumed by Phases 3/4.
+
 for outcome, feats in outcome_specs:
     cols = [outcome] + feats
     tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
@@ -1607,33 +1699,38 @@ for outcome, feats in outcome_specs:
         .dropna()
     )
     step5_vif_frames.append(
-        pd.DataFrame(
-            {
-                "outcome": outcome,
-                "feature": vif_X.columns,
-                "vif": [float(variance_inflation_factor(vif_X.values, i)) for i in range(vif_X.shape[1])],
-            }
-        ).sort_values("vif", ascending=False)
+        pd.DataFrame({
+            "outcome": outcome,
+            "feature": vif_X.columns,
+            "vif": [float(variance_inflation_factor(vif_X.values, i)) for i in range(vif_X.shape[1])],
+        }).sort_values("vif", ascending=False)
     )
 
     for model_name, (model_obj, tuning_grid) in candidate_models.items():
         pipe = build_pipeline(feats, model_obj)
-        if tuning_grid is not None:
-            search = GridSearchCV(
-                pipe,
-                param_grid=tuning_grid,
-                scoring="neg_root_mean_squared_error",
-                cv=cv_splits,
-                n_jobs=-1,
-                refit=True,
+        if tuning_grid is None:
+            best_estimator = pipe.fit(X_train, y_train)
+            best_params: dict = {}
+        elif model_name in RANDOMIZED:
+            search = RandomizedSearchCV(
+                pipe, param_distributions=tuning_grid, n_iter=N_ITER_RANDOM,
+                scoring="neg_root_mean_squared_error", cv=cv_splits,
+                n_jobs=SEARCH_N_JOBS, random_state=RNG, refit=True,
             )
             search.fit(X_train, y_train)
             best_estimator = search.best_estimator_
-            best_alpha = float(search.best_params_["model__alpha"])
+            best_params = search.best_params_
         else:
-            best_estimator = pipe.fit(X_train, y_train)
-            best_alpha = np.nan
+            search = GridSearchCV(
+                pipe, param_grid=tuning_grid,
+                scoring="neg_root_mean_squared_error", cv=cv_splits,
+                n_jobs=SEARCH_N_JOBS, refit=True,
+            )
+            search.fit(X_train, y_train)
+            best_estimator = search.best_estimator_
+            best_params = search.best_params_
 
+        # Honest per-fold CV scores — refit the tuned estimator from scratch on each fold.
         cv_fold_scores = []
         for fold_train_idx, fold_val_idx in cv_splits:
             fold_estimator = clone(best_estimator)
@@ -1648,24 +1745,102 @@ for outcome, feats in outcome_specs:
             "outcome": outcome,
             "model": model_name,
             "n_train": int(len(tr)),
-            "cv_r2_mean": float(np.mean([s[0] for s in cv_fold_scores])),
-            "cv_r2_sd": float(np.std([s[0] for s in cv_fold_scores], ddof=1)),
-            "cv_rmse_mean": float(np.mean([s[1] for s in cv_fold_scores])),
-            "cv_rmse_sd": float(np.std([s[1] for s in cv_fold_scores], ddof=1)),
-            "alpha": best_alpha,
             "n_test": int(len(te)),
+            "cv_r2_mean": float(np.mean([s_[0] for s_ in cv_fold_scores])),
+            "cv_r2_sd": float(np.std([s_[0] for s_ in cv_fold_scores], ddof=1)),
+            "cv_rmse_mean": float(np.mean([s_[1] for s_ in cv_fold_scores])),
+            "cv_rmse_sd": float(np.std([s_[1] for s_ in cv_fold_scores], ddof=1)),
+            "best_params": str(best_params),
             "r2_test": r2_test,
             "rmse_test": rmse_test,
         })
+        fitted_models[(outcome, model_name)] = best_estimator
+```
 
+```{python}
+#| label: step5c-fit-gam
+# GAM fit with pygam. pygam's API takes explicit term indices, so we bypass the
+# sklearn Pipeline and transform the design matrix once, then fit LinearGAM with
+# spline terms on numeric features and linear terms on the one-hot cma_size dummies.
+def build_gam_design(feats, df_train, df_test):
+    num_feats = [f for f in feats if f != "cma_size"]
+    cat_feats = ["cma_size"] if "cma_size" in feats else []
+    pre = ColumnTransformer([
+        ("num", StandardScaler(), num_feats),
+        ("cat", OneHotEncoder(drop="first", handle_unknown="ignore"), cat_feats),
+    ], remainder="drop")
+    pre.fit(df_train[feats])
+    X_tr = np.asarray(pre.transform(df_train[feats]))
+    X_te = np.asarray(pre.transform(df_test[feats]))
+    return pre, X_tr, X_te, len(num_feats), X_tr.shape[1]
+
+def build_gam_terms(n_num: int, n_total: int):
+    t = s(0)
+    for i in range(1, n_num):
+        t = t + s(i)
+    for i in range(n_num, n_total):
+        t = t + l(i)
+    return t
+
+for outcome, feats in outcome_specs:
+    cols = [outcome] + feats
+    tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    te = test_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    cv_splits = make_year_splits(tr, n_splits=5)
+
+    pre, X_tr, X_te, n_num, n_total = build_gam_design(feats, tr, te)
+    y_tr = tr[outcome].to_numpy(dtype=float)
+    y_te = te[outcome].to_numpy(dtype=float)
+    terms = build_gam_terms(n_num, n_total)
+
+    cv_fold_scores = []
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for fold_train_idx, fold_val_idx in cv_splits:
+            fold_gam = LinearGAM(terms).fit(X_tr[fold_train_idx], y_tr[fold_train_idx])
+            fold_pred = fold_gam.predict(X_tr[fold_val_idx])
+            fold_r2, fold_rmse = score_regression(y_tr[fold_val_idx], fold_pred)
+            cv_fold_scores.append((fold_r2, fold_rmse))
+        final_gam = LinearGAM(terms).gridsearch(X_tr, y_tr, progress=False)
+    p_test = final_gam.predict(X_te)
+    r2_test, rmse_test = score_regression(y_te, p_test)
+    model_rows.append({
+        "outcome": outcome,
+        "model": "GAM",
+        "n_train": int(len(tr)),
+        "n_test": int(len(te)),
+        "cv_r2_mean": float(np.mean([s_[0] for s_ in cv_fold_scores])),
+        "cv_r2_sd": float(np.std([s_[0] for s_ in cv_fold_scores], ddof=1)),
+        "cv_rmse_mean": float(np.mean([s_[1] for s_ in cv_fold_scores])),
+        "cv_rmse_sd": float(np.std([s_[1] for s_ in cv_fold_scores], ddof=1)),
+        "best_params": f"lam={[round(float(x), 3) for x in np.atleast_1d(final_gam.lam).ravel()]}",
+        "r2_test": r2_test,
+        "rmse_test": rmse_test,
+    })
+    # Store preprocessor + fitted GAM together so Phase 3/4 can reuse them.
+    fitted_models[(outcome, "GAM")] = {"preprocessor": pre, "gam": final_gam, "n_num": n_num}
+```
+
+```{python}
+#| label: step5d-results-table
+# Reduced-feature VIF + unified model comparison table on the rate target.
 step5_vif_df = pd.concat(step5_vif_frames, ignore_index=True).sort_values(["outcome", "vif"], ascending=[True, False]).reset_index(drop=True)
-model_results_df = pd.DataFrame(model_rows).sort_values(["outcome", "cv_rmse_mean", "model"]).reset_index(drop=True)
+model_results_df = (
+    pd.DataFrame(model_rows)
+    .sort_values(["outcome", "cv_rmse_mean", "model"])
+    .reset_index(drop=True)
+)
 display(step5_vif_df)
 display(model_results_df)
 step5_vif_df.to_csv(tables_dir / "5_reduced_vif.csv", index=False)
 model_results_df.to_csv(tables_dir / "5_model_results.csv", index=False)
+```
 
-# Train-set OLS summaries for interpretation; CV selection above is unchanged.
+```{python}
+#| label: step5e-ols-summary
+# HC3 robust OLS summaries on the rate target — interpretability anchor for the
+# linear-baseline block. Kept as a RQ1 predictive anchor here; the full inferential
+# model with interactions lives in Step 7.
 for outcome, feats in outcome_specs:
     cols = [outcome] + feats
     tr = train_model[cols].dropna().copy()
@@ -1673,4 +1848,344 @@ for outcome, feats in outcome_specs:
     fit = smf.ols(formula, data=tr).fit(cov_type="HC3")
     print(f"\nOLS summary — {outcome}")
     print(fit.summary())
+```
+
+```{python}
+#| label: step5f-variable-importance
+# Variable importance for the tree models: native (Gini/gain) and permutation
+# (model-agnostic, computed on the holdout so it reflects out-of-time generalisation).
+from sklearn.inspection import permutation_importance
+
+importance_rows = []
+for outcome, feats in outcome_specs:
+    cols = [outcome] + feats
+    tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    te = test_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    X_test, y_test = te[feats], te[outcome]
+
+    for model_name in ["RandomForest", "XGBoost"]:
+        estimator = fitted_models[(outcome, model_name)]
+        model_step = estimator.named_steps["model"]
+        pre = estimator.named_steps["preprocessor"]
+
+        transformed_names = [n.split("__", 1)[-1] for n in pre.get_feature_names_out()]
+        native_imp = np.asarray(model_step.feature_importances_, dtype=float)
+        for tname, imp in zip(transformed_names, native_imp):
+            importance_rows.append({
+                "outcome": outcome, "model": model_name, "kind": "native",
+                "feature": tname, "importance": float(imp), "sd": np.nan,
+            })
+
+        perm = permutation_importance(
+            estimator, X_test, y_test, n_repeats=30, random_state=RNG,
+            scoring="neg_root_mean_squared_error", n_jobs=1,
+        )
+        for fname, imp_mean, imp_sd in zip(feats, perm.importances_mean, perm.importances_std):
+            importance_rows.append({
+                "outcome": outcome, "model": model_name, "kind": "permutation_test",
+                "feature": fname, "importance": float(imp_mean), "sd": float(imp_sd),
+            })
+
+importance_df = pd.DataFrame(importance_rows)
+importance_df.to_csv(tables_dir / "5f_feature_importance.csv", index=False)
+
+for (outcome_, model_name_, kind_), grp in importance_df.groupby(["outcome", "model", "kind"]):
+    top = grp.nlargest(10, "importance").sort_values("importance")
+    g = (
+        p9.ggplot(top, p9.aes(x="reorder(feature, importance)", y="importance"))
+        + p9.geom_col(fill="#4E79A7")
+        + p9.coord_flip()
+        + p9.labs(title=f"Feature importance — {outcome_} — {model_name_} ({kind_})", x="", y="Importance")
+        + p9.theme_minimal(base_size=11)
+        + p9.theme(figure_size=(9, 5))
+    )
+    fname = f"5f_importance_{outcome_}_{model_name_}_{kind_}.png".lower()
+    p9.ggsave(g, filename=str(FIG_DIR / fname), width=9, height=5, units="in", dpi=160, verbose=False)
+
+display(importance_df.head(40))
+```
+
+```{python}
+#| label: step5g-heteroscedasticity-diagnostic
+# Check whether residuals have larger magnitude in smaller CMAs — if so, the per-capita
+# normalisation has not fully absorbed size-driven noise and a weighted refit is
+# warranted as a robustness variant. Diagnostic: regress |residual| on log_population
+# (negative slope + p < .05 → heteroscedastic).
+import statsmodels.api as sm
+
+hetero_rows = []
+diag_plot_rows = []
+
+for outcome, feats in outcome_specs:
+    cols = [outcome] + feats
+    tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    X_train, y_train = tr[feats], tr[outcome]
+
+    for model_name in ["OLS", "RandomForest", "XGBoost"]:
+        estimator = fitted_models[(outcome, model_name)]
+        y_pred = estimator.predict(X_train)
+        resid = y_train.to_numpy() - y_pred
+        log_pop = tr["log_population"].to_numpy()
+        abs_resid = np.abs(resid)
+
+        ols_fit = sm.OLS(abs_resid, sm.add_constant(log_pop)).fit(cov_type="HC3")
+        slope = float(ols_fit.params[1])
+        p_val = float(ols_fit.pvalues[1])
+        hetero_rows.append({
+            "outcome": outcome, "model": model_name,
+            "slope_abs_resid_vs_log_pop": slope,
+            "p_value": p_val,
+            "heteroscedastic_neg_slope_p05": bool(p_val < 0.05 and slope < 0),
+        })
+        for lp, ar in zip(log_pop, abs_resid):
+            diag_plot_rows.append({
+                "outcome": outcome, "model": model_name,
+                "log_population": float(lp), "abs_residual": float(ar),
+            })
+
+hetero_df = pd.DataFrame(hetero_rows)
+diag_plot_df = pd.DataFrame(diag_plot_rows)
+display(hetero_df)
+hetero_df.to_csv(tables_dir / "5g_heteroscedasticity_diagnostic.csv", index=False)
+
+g_diag = (
+    p9.ggplot(diag_plot_df, p9.aes(x="log_population", y="abs_residual", color="model"))
+    + p9.geom_point(alpha=0.4, size=1.1)
+    + p9.geom_smooth(method="lm", se=False)
+    + p9.facet_wrap("~outcome", ncol=2, scales="free_y")
+    + p9.labs(title="|residual| vs log_population — heteroscedasticity check",
+              x="log_population", y="|residual|", color="Model")
+    + p9.theme_minimal(base_size=11)
+    + p9.theme(figure_size=(12, 5))
+)
+p9.ggsave(g_diag, filename=str(FIG_DIR / "5g_residual_vs_logpop.png"), width=12, height=5, units="in", dpi=160, verbose=False)
+display(g_diag)
+
+# Weighted OLS refit (sample_weight=population) — unconditional robustness variant.
+weighted_rows = []
+for outcome, feats in outcome_specs:
+    cols = [outcome] + feats + ["population"]
+    tr = train_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    te = test_model[cols].dropna().sort_values("year").reset_index(drop=True)
+    X_train, y_train = tr[feats], tr[outcome]
+    X_test, y_test = te[feats], te[outcome]
+    w_train = tr["population"].to_numpy(dtype=float)
+    cv_splits = make_year_splits(tr, n_splits=5)
+
+    pipe = build_pipeline(feats, LinearRegression())
+    cv_fold_scores = []
+    for fold_train_idx, fold_val_idx in cv_splits:
+        fold_estimator = clone(pipe)
+        fold_estimator.fit(
+            X_train.iloc[fold_train_idx], y_train.iloc[fold_train_idx],
+            model__sample_weight=w_train[fold_train_idx],
+        )
+        fold_pred = fold_estimator.predict(X_train.iloc[fold_val_idx])
+        fold_r2, fold_rmse = score_regression(y_train.iloc[fold_val_idx], fold_pred)
+        cv_fold_scores.append((fold_r2, fold_rmse))
+    final_est = clone(pipe).fit(X_train, y_train, model__sample_weight=w_train)
+    p_test = final_est.predict(X_test)
+    r2_test, rmse_test = score_regression(y_test, p_test)
+    weighted_rows.append({
+        "outcome": outcome,
+        "model": "OLS_weighted",
+        "n_train": int(len(tr)),
+        "n_test": int(len(te)),
+        "cv_r2_mean": float(np.mean([s_[0] for s_ in cv_fold_scores])),
+        "cv_r2_sd": float(np.std([s_[0] for s_ in cv_fold_scores], ddof=1)),
+        "cv_rmse_mean": float(np.mean([s_[1] for s_ in cv_fold_scores])),
+        "cv_rmse_sd": float(np.std([s_[1] for s_ in cv_fold_scores], ddof=1)),
+        "best_params": "sample_weight=population",
+        "r2_test": r2_test,
+        "rmse_test": rmse_test,
+    })
+    fitted_models[(outcome, "OLS_weighted")] = final_est
+
+weighted_df = pd.DataFrame(weighted_rows)
+weighted_df.to_csv(tables_dir / "5g_weighted_ols_results.csv", index=False)
+display(weighted_df)
+```
+
+## Step 6 — RQ2: Lag Features on Housing and Labour Predictors
+```{python}
+#| label: step6-lag-features
+# Lagging housing (rent_deviation) and labour (unemployment_rate) inputs captures
+# the delay between structural change and migration response — lease cycles and job
+# search horizons operate on 1–2 year scales. Compare contemporaneous, +lag1, and
+# +lag1+lag2 specifications for both outcomes, fit with OLS and a default XGBoost.
+LAG_FEATURES = ["rent_deviation", "unemployment_rate"]
+LAG_ORDERS = [1, 2]
+
+panel_lag = panel.sort_values(["geo_key", "year"]).copy()
+panel_lag["cma_size"] = panel_lag["geo_key"].map(size_map).fillna("Unknown")
+for feat in LAG_FEATURES:
+    for lg in LAG_ORDERS:
+        panel_lag[f"{feat}_lag{lg}"] = panel_lag.groupby("geo_key")[feat].shift(lg)
+train_lag = panel_lag[panel_lag["year"] <= TRAIN_END_YEAR].copy()
+test_lag = panel_lag[panel_lag["year"] >= (TRAIN_END_YEAR + 1)].copy()
+
+def score_lag_spec(outcome, feats, tr_df, te_df, model_ctor):
+    cols = [outcome] + feats
+    tr = tr_df[cols].dropna().sort_values("year").reset_index(drop=True)
+    te = te_df[cols].dropna().sort_values("year").reset_index(drop=True)
+    X_tr, y_tr = tr[feats], tr[outcome]
+    X_te, y_te = te[feats], te[outcome]
+    cv_splits = make_year_splits(tr, n_splits=5)
+    pipe = build_pipeline(feats, model_ctor())
+    cv_fold_scores = []
+    for ftrn, fval in cv_splits:
+        fold_est = clone(pipe).fit(X_tr.iloc[ftrn], y_tr.iloc[ftrn])
+        fold_pred = fold_est.predict(X_tr.iloc[fval])
+        r2f, rmsef = score_regression(y_tr.iloc[fval], fold_pred)
+        cv_fold_scores.append((r2f, rmsef))
+    final_est = clone(pipe).fit(X_tr, y_tr)
+    r2_test, rmse_test = score_regression(y_te, final_est.predict(X_te))
+    return {
+        "n_train": int(len(tr)),
+        "n_test": int(len(te)),
+        "cv_r2_mean": float(np.mean([s_[0] for s_ in cv_fold_scores])),
+        "cv_r2_sd": float(np.std([s_[0] for s_ in cv_fold_scores], ddof=1)),
+        "cv_rmse_mean": float(np.mean([s_[1] for s_ in cv_fold_scores])),
+        "cv_rmse_sd": float(np.std([s_[1] for s_ in cv_fold_scores], ddof=1)),
+        "r2_test": r2_test,
+        "rmse_test": rmse_test,
+    }
+
+lag_specs = {
+    "contemporaneous": [],
+    "lag1":            [f"{f}_lag1" for f in LAG_FEATURES],
+    "lag1_lag2":       [f"{f}_lag{lg}" for f in LAG_FEATURES for lg in (1, 2)],
+}
+lag_model_ctors = {
+    "OLS": LinearRegression,
+    # XGBoost n_jobs=-1 is safe (OpenMP threads, shared memory).
+    "XGBoost": lambda: XGBRegressor(
+        random_state=RNG, n_jobs=-1, tree_method="hist",
+        objective="reg:squarederror", verbosity=0,
+        n_estimators=500, max_depth=5, learning_rate=0.05,
+        subsample=0.8, colsample_bytree=0.8,
+    ),
+}
+
+lag_rows = []
+for outcome, feats in outcome_specs:
+    for spec_name, extra_feats in lag_specs.items():
+        feats_with_lag = feats + extra_feats
+        for model_name, ctor in lag_model_ctors.items():
+            res = score_lag_spec(outcome, feats_with_lag, train_lag, test_lag, ctor)
+            res.update({
+                "outcome": outcome, "model": model_name, "spec": spec_name,
+                "n_features": len(feats_with_lag),
+            })
+            lag_rows.append(res)
+
+lag_df = (
+    pd.DataFrame(lag_rows)[[
+        "outcome", "model", "spec", "n_features", "n_train", "n_test",
+        "cv_r2_mean", "cv_r2_sd", "cv_rmse_mean", "cv_rmse_sd", "r2_test", "rmse_test",
+    ]]
+    .sort_values(["outcome", "model", "spec"])
+    .reset_index(drop=True)
+)
+display(lag_df)
+lag_df.to_csv(tables_dir / "6_lag_comparison.csv", index=False)
+```
+
+## Step 7 — RQ3 Inference: Covid-19 Structural Shift (Full Panel)
+```{python}
+#| label: step7-rq3-ols
+# Inferential OLS on the full 2001–2024 panel (no train/test split per F3/F5).
+# The year:post_covid interaction explicitly tests a trend break; the
+# post_covid:cma_size interaction tests whether the break magnitude differs by CMA
+# size. HC3 robust SE throughout.
+panel_inf = panel.copy()
+panel_inf["cma_size"] = panel_inf["geo_key"].map(size_map).fillna("Unknown")
+panel_inf["post_covid"] = (panel_inf["year"] >= 2020).astype(int)
+
+PUSHPULL_INTER = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "log_population", "rd_provincial"]
+PUSHPULL_INTRA = ["rent_deviation", "unemployment_rate", "share_65plus", "intl_inmigration", "log_population"]
+
+def rq3_ols_formula(outcome: str, pushpull: list[str]) -> str:
+    terms = pushpull + [
+        "year", "post_covid", "year:post_covid",
+        "C(cma_size)", "post_covid:C(cma_size)",
+    ]
+    return f"{outcome} ~ " + " + ".join(terms)
+
+rq3_specs = [
+    ("net_interprovincial_rate", PUSHPULL_INTER, "7a_rq3_ols_inter.csv"),
+    ("net_intraprovincial_rate", PUSHPULL_INTRA, "7b_rq3_ols_intra.csv"),
+]
+
+rq3_fitted_ols = {}
+for outcome, pushpull, out_csv in rq3_specs:
+    cols = [outcome, "year", "post_covid", "cma_size"] + pushpull
+    df_ = panel_inf[cols].dropna().copy()
+    fit = smf.ols(rq3_ols_formula(outcome, pushpull), data=df_).fit(cov_type="HC3")
+    rq3_fitted_ols[outcome] = fit
+    print(f"\nRQ3 OLS (HC3) — {outcome}  (n={int(fit.nobs)})")
+    print(fit.summary())
+
+    ci = fit.conf_int(alpha=0.05)
+    coef_df = pd.DataFrame({
+        "term": fit.params.index,
+        "estimate": fit.params.values,
+        "se_hc3": fit.bse.values,
+        "ci_lower": ci[0].values,
+        "ci_upper": ci[1].values,
+        "p_value": fit.pvalues.values,
+    })
+    coef_df.to_csv(tables_dir / out_csv, index=False)
+    display(coef_df.round(4))
+```
+
+```{python}
+#| label: step7-rq3-gam
+# GAM complement: smooth s(year) captures the non-linear trajectory that OLS's
+# year:post_covid interaction approximates linearly. One fit per outcome.
+for outcome, pushpull, _ in rq3_specs:
+    cols = [outcome, "year", "cma_size"] + pushpull
+    df_ = panel_inf[cols].dropna().copy()
+    num_feats = ["year"] + pushpull
+
+    pre = ColumnTransformer([
+        ("num", StandardScaler(), num_feats),
+        ("cat", OneHotEncoder(drop="first", handle_unknown="ignore"), ["cma_size"]),
+    ], remainder="drop")
+    pre.fit(df_[num_feats + ["cma_size"]])
+    X_ = np.asarray(pre.transform(df_[num_feats + ["cma_size"]]))
+    y_ = df_[outcome].to_numpy(dtype=float)
+    n_num = len(num_feats)
+    n_total = X_.shape[1]
+    terms = build_gam_terms(n_num, n_total)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        gam = LinearGAM(terms).gridsearch(X_, y_, progress=False)
+
+    yr_idx = num_feats.index("year")
+    XX = gam.generate_X_grid(term=yr_idx)
+    pdep, confi = gam.partial_dependence(term=yr_idx, X=XX, width=0.95)
+    # Unstandardise the year axis so the plot reads in calendar years.
+    year_mean = df_["year"].mean()
+    year_sd = df_["year"].std(ddof=0)
+    year_axis = XX[:, yr_idx] * year_sd + year_mean
+    pd_df = pd.DataFrame({
+        "year": year_axis,
+        "partial": pdep,
+        "ci_lower": confi[:, 0],
+        "ci_upper": confi[:, 1],
+    })
+    g_gam = (
+        p9.ggplot(pd_df, p9.aes(x="year", y="partial"))
+        + p9.geom_line(color="#E15759", size=1.1)
+        + p9.geom_ribbon(p9.aes(ymin="ci_lower", ymax="ci_upper"), alpha=0.2, fill="#E15759")
+        + p9.geom_vline(xintercept=2020, linetype="dashed", color="gray")
+        + p9.labs(title=f"GAM partial effect of year — {outcome}",
+                  x="Year", y="Partial contribution to migration rate per 1,000")
+        + p9.theme_minimal(base_size=12)
+        + p9.theme(figure_size=(10, 4.5))
+    )
+    fname = f"7_gam_partial_effects_{outcome}.png"
+    p9.ggsave(g_gam, filename=str(FIG_DIR / fname), width=10, height=4.5, units="in", dpi=160, verbose=False)
+    display(g_gam)
 ```
