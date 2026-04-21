@@ -1,11 +1,11 @@
-# JSC370 2026 Final Project — Internal Migration in Canada
+# Internal Migration in Canada — Push–Pull Factors and the COVID-19 Structural Shift
 
-[![Live site](https://img.shields.io/badge/site-live-2c5f8d)](https://jennifer1046.github.io/JSC370/)
+JSC370 (Data Science II) · University of Toronto · Final Project · 2026
 
-**Author:** Yibing Xia · University of Toronto · JSC370 (Data Science II), 2026
-**Live site:** <https://jennifer1046.github.io/JSC370/>
-**Full written report:** <https://jennifer1046.github.io/JSC370/final.html>
-**Interactive plots (Homework 5):** <https://jennifer1046.github.io/JSC370/viz.html>
+**Author:** Yibing Xia
+**Website:** <https://jennifer1046.github.io/JSC370/>
+**Written report:** <https://jennifer1046.github.io/JSC370/final.html>
+**Interactive visualisations (Homework 5):** <https://jennifer1046.github.io/JSC370/viz.html>
 
 ## Overview
 

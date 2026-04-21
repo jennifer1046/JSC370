@@ -1,14 +1,90 @@
-@import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
+/* Report styling — mirrors site/styles.css for visual cohesion across the
+   written report and the website landing/viz pages. */
 
-body {
-  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont,
-    "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+:root {
+  --mk-navy:    #051C2C;
+  --mk-navy-2:  #0A2540;
+  --mk-accent:  #2251FF;
+  --mk-body:    #1a1a1a;
+  --mk-mute:    #6a6a6a;
+  --mk-rule:    #dddddd;
+  --mk-surface: #f4f4f4;
+  --mk-paper:   #ffffff;
 }
 
-.table-caption {
-  font-size: 1.25rem;
+body {
+  font-family: "Charter", "Iowan Old Style", "Georgia", "Times New Roman", serif;
+  color: var(--mk-body);
+  background: var(--mk-paper);
+  line-height: 1.65;
+  font-size: 17px;
+}
+
+h1, h2, h3, h4, h5, h6,
+.table-caption, .figure-caption, .figure-description,
+.report-table,
+.table-panel-title,
+.page-footer, .nav-footer {
+  font-family: "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", sans-serif;
+}
+
+h1 {
   font-weight: 700;
-  margin: 1.25rem 0 0.65rem 0;
+  color: var(--mk-navy);
+  letter-spacing: -0.02em;
+  font-size: 2.1rem;
+}
+
+h2 {
+  font-weight: 600;
+  color: var(--mk-navy);
+  border-top: 1px solid var(--mk-rule);
+  padding-top: 1.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-weight: 600;
+  color: var(--mk-navy);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+}
+
+h4 {
+  font-weight: 600;
+  color: var(--mk-navy-2);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Links */
+a {
+  color: var(--mk-accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(34, 81, 255, 0.3);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+a:hover {
+  color: var(--mk-navy);
+  border-bottom-color: var(--mk-navy);
+}
+
+/* Tables — top and bottom rules only, tabular numerics right-aligned */
+.table-caption {
+  font-size: 0.78rem;
+  color: var(--mk-navy);
+  margin: 1.25rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
 }
 
 table.report-table {
@@ -21,32 +97,37 @@ table.report-table {
 table.report-table thead th {
   text-align: left;
   font-weight: 700;
-  padding: 0.8rem 0.6rem;
-  border-top: 1px solid #d4d8dd;
-  border-bottom: 1px solid #9ea4ab;
+  padding: 0.6rem 0.75rem;
+  border-top: 2px solid var(--mk-navy);
+  border-bottom: 1px solid var(--mk-navy);
+  color: var(--mk-navy);
+  background: var(--mk-paper);
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  font-size: 0.8rem;
+  white-space: nowrap;
 }
 
 table.report-table tbody td {
-  padding: 0.8rem 0.6rem;
-  border-bottom: 1px solid #d4d8dd;
+  padding: 0.55rem 0.75rem;
+  border-bottom: 1px solid var(--mk-rule);
   vertical-align: top;
 }
 
 table.report-table td.num,
 table.report-table th.num {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
 table.report-table tr.group-gap td {
-  padding: 0.6rem 0;
-  border-bottom: none;
+  padding: 0;
+  height: 0;
+  border-bottom: 2px solid var(--mk-navy);
 }
 
-table.report-table tr.group-gap td::after {
-  content: "";
-  display: block;
-  border-bottom: 1px solid #d4d8dd;
-  margin-top: 0.2rem;
+table.report-table tbody tr:last-child td {
+  border-bottom: 2px solid var(--mk-navy);
 }
 
 .table-grid {
@@ -63,17 +144,113 @@ table.report-table tr.group-gap td::after {
 }
 
 .table-panel .report-table {
-  min-width: 42rem;
+  min-width: 38rem;
 }
 
 .table-panel-title {
-  font-size: 1.05rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  margin: 0 0 0.6rem 0;
+  color: var(--mk-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin: 0 0 0.4rem 0;
+}
+
+/* Figure captions (for ![alt](path){caption} renderings) */
+figcaption, .figure-caption {
+  font-size: 0.78rem;
+  color: var(--mk-navy);
+  margin: 0.5rem 0 0.25rem;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+}
+
+/* Code */
+code {
+  font-family: "JetBrains Mono", "IBM Plex Mono", "SF Mono", "Menlo", monospace;
+  background: var(--mk-surface);
+  padding: 0.08em 0.35em;
+  border-radius: 2px;
+  font-size: 0.87em;
+  color: var(--mk-navy);
+}
+
+pre,
+pre code {
+  background: var(--mk-surface);
+  color: var(--mk-body);
+  border: none;
+  border-left: 3px solid var(--mk-navy);
+  padding: 0.9rem 1rem;
+  border-radius: 0;
+  font-size: 0.85rem;
+}
+
+/* Horizontal rule */
+hr {
+  border: none;
+  border-top: 1px solid var(--mk-rule);
+  margin: 2.5rem 0;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 3px solid var(--mk-navy);
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: var(--mk-body);
+  font-style: italic;
+  margin: 1.5rem 0;
+}
+
+/* Lists */
+ul, ol {
+  line-height: 1.65;
+}
+
+ul li, ol li {
+  margin-bottom: 0.3rem;
+}
+
+/* Title block (Quarto-generated) */
+.quarto-title-block {
+  border-bottom: 2px solid var(--mk-navy);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+}
+
+.quarto-title-block .quarto-title .title {
+  font-weight: 700;
+  color: var(--mk-navy);
+  font-size: 2.2rem;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
+}
+
+/* Table of contents */
+nav[role="doc-toc"] .nav-link {
+  color: var(--mk-mute);
+  font-size: 0.85rem;
+  border-bottom: none;
+}
+
+nav[role="doc-toc"] .nav-link.active,
+nav[role="doc-toc"] .nav-link:hover {
+  color: var(--mk-navy);
+  border-bottom: none;
 }
 
 @media (max-width: 900px) {
   .table-grid {
     grid-template-columns: 1fr;
   }
+  .table-panel .report-table {
+    min-width: 0;
+  }
+}
+
+img {
+  max-width: 100%;
+  height: auto;
 }

@@ -1,10 +1,11 @@
 ---
-title: "About this project"
+title: "About"
+subtitle: "Author, data provenance, and reproducibility"
 ---
 
 ## Author
 
-**Yibing Xia** — University of Toronto, JSC370 (Data Science II), 2026.
+**Yibing Xia** — University of Toronto · JSC370 (Data Science II) · 2026.
 
 ## Course context
 
