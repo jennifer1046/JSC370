@@ -2,7 +2,7 @@
 
 [![Live site](https://img.shields.io/badge/site-live-2c5f8d)](https://jennifer1046.github.io/JSC370/)
 
-**Author:** Yibing (Alex) Xia · University of Toronto · JSC370 (Data Science II), 2026
+**Author:** Yibing Xia · University of Toronto · JSC370 (Data Science II), 2026
 **Live site:** <https://jennifer1046.github.io/JSC370/>
 **Full written report:** <https://jennifer1046.github.io/JSC370/final.html>
 **Interactive plots (Homework 5):** <https://jennifer1046.github.io/JSC370/viz.html>

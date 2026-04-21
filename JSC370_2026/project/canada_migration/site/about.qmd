@@ -4,7 +4,7 @@ title: "About this project"
 
 ## Author
 
-**Yibing (Alex) Xia** — University of Toronto, JSC370 (Data Science II), 2026.
+**Yibing Xia** — University of Toronto, JSC370 (Data Science II), 2026.
 
 ## Course context
 

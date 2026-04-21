@@ -16,25 +16,12 @@ Internal migration — residents moving between and within Canadian provinces �
 
 ## Navigate
 
-<a class="card-link" href="final.html">
-  <div class="card-title">📄 Full written report</div>
-  <div class="card-sub">Methods, results, and interpretation — roughly 6–7 pages including tables and figures.</div>
-</a>
-
-<a class="card-link" href="viz.html">
-  <div class="card-title">📊 Interactive visualisations</div>
-  <div class="card-sub">Three Plotly figures: a CMA bubble map across the full 2001–2024 panel, an interactive per-CMA time series with dropdown and range slider, and a rent-vs-migration bubble scatter with a year animation.</div>
-</a>
-
-<a class="card-link" href="https://github.com/jennifer1046/JSC370/tree/main/JSC370_2026/project/canada_migration" target="_blank" rel="noopener">
-  <div class="card-title">💻 GitHub repository</div>
-  <div class="card-sub">Reproducible pipeline (<code>migration_analysis.qmd</code>), report source (<code>final.qmd</code>), and every figure/table written to <code>outputs/</code>.</div>
-</a>
-
-<a class="card-link" href="about.html">
-  <div class="card-title">ℹ️ About the project</div>
-  <div class="card-sub">Author, data sources, reproducibility notes, and acknowledgements.</div>
-</a>
+<div class="nav-cards">
+<a class="card-link" href="final.html"><div class="card-title">📄 Full written report</div><div class="card-sub">Methods, results, and interpretation — roughly 6–7 pages including tables and figures.</div></a>
+<a class="card-link" href="viz.html"><div class="card-title">📊 Interactive visualisations</div><div class="card-sub">Three Plotly figures: a CMA bubble map across the full 2001–2024 panel, an interactive per-CMA time series with dropdown and range slider, and a rent-vs-migration bubble scatter with a year animation.</div></a>
+<a class="card-link" href="https://github.com/jennifer1046/JSC370/tree/main/JSC370_2026/project/canada_migration" target="_blank" rel="noopener"><div class="card-title">💻 GitHub repository</div><div class="card-sub">Reproducible pipeline (<code>migration_analysis.qmd</code>), report source (<code>final.qmd</code>), and every figure/table written to <code>outputs/</code>.</div></a>
+<a class="card-link" href="about.html"><div class="card-title">ℹ️ About the project</div><div class="card-sub">Author, data sources, reproducibility notes, and acknowledgements.</div></a>
+</div>
 
 ## Headline findings
 
