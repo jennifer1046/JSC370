@@ -4,14 +4,14 @@
     "href": "about.html",
     "title": "About this project",
     "section": "",
-    "text": "Yibing (Alex) Xia — University of Toronto, JSC370 (Data Science II), 2026."
+    "text": "Yibing Xia — University of Toronto, JSC370 (Data Science II), 2026."
   },
   {
     "objectID": "about.html#author",
     "href": "about.html#author",
     "title": "About this project",
     "section": "",
-    "text": "Yibing (Alex) Xia — University of Toronto, JSC370 (Data Science II), 2026."
+    "text": "Yibing Xia — University of Toronto, JSC370 (Data Science II), 2026."
   },
   {
     "objectID": "about.html#course-context",
@@ -102,7 +102,7 @@
     "href": "index.html#navigate",
     "title": "Internal Migration in Canada",
     "section": "Navigate",
-    "text": "Navigate\n\n\n📄 Full written report\n\n\nMethods, results, and interpretation — roughly 6–7 pages including tables and figures.\n\n\n\n\n📊 Interactive visualisations\n\n\nThree Plotly figures: a CMA bubble map across the full 2001–2024 panel, an interactive per-CMA time series with dropdown and range slider, and a rent-vs-migration bubble scatter with a year animation.\n\n\n\n\n💻 GitHub repository\n\n\nReproducible pipeline (migration_analysis.qmd), report source (final.qmd), and every figure/table written to outputs/.\n\n\n\n\nℹ️ About the project\n\n\nAuthor, data sources, reproducibility notes, and acknowledgements."
+    "text": "Navigate\n\n\n\n📄 Full written report\n\n\nMethods, results, and interpretation — roughly 6–7 pages including tables and figures.\n\n \n\n📊 Interactive visualisations\n\n\nThree Plotly figures: a CMA bubble map across the full 2001–2024 panel, an interactive per-CMA time series with dropdown and range slider, and a rent-vs-migration bubble scatter with a year animation.\n\n \n\n💻 GitHub repository\n\n\nReproducible pipeline (migration_analysis.qmd), report source (final.qmd), and every figure/table written to outputs/.\n\n \n\nℹ️ About the project\n\n\nAuthor, data sources, reproducibility notes, and acknowledgements."
   },
   {
     "objectID": "index.html#headline-findings",
