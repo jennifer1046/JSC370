@@ -1,0 +1,37 @@
+project:
+  type: website
+  output-dir: _site
+
+website:
+  title: "Canada Internal Migration"
+  description: "JSC370 2026 Final Project — push-pull factors and the COVID-19 structural shift"
+  navbar:
+    left:
+      - text: Home
+        href: index.qmd
+      - text: Interactive Plots
+        href: viz.qmd
+      - text: About
+        href: about.qmd
+    right:
+      - text: "Full Report"
+        href: final.html
+      - icon: github
+        href: https://github.com/jennifer1046/JSC370
+        aria-label: GitHub repository
+  page-footer:
+    center: "© 2026 Yibing Xia — JSC370 (Data Science II), University of Toronto"
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    toc-depth: 3
+    css: styles.css
+
+execute:
+  echo: false
+  warning: false
+  message: false
+
+jupyter: python3

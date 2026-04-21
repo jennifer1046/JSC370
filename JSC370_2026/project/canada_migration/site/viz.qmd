@@ -1,0 +1,283 @@
+---
+title: "Interactive Visualisations"
+subtitle: "Homework 5 — three views of the CMA internal migration panel"
+---
+
+This page presents three interactive Plotly visualisations of the merged CMA panel (40 CMAs × 24 years = 960 observations, 2001–2024). Each view answers a different question about the push–pull dynamics of internal migration; all three read the already-processed panel at `../data/processed/panel_cma.csv` and are self-contained (the Plotly bundle is embedded so the plots work offline after the page is loaded).
+
+```{python}
+#| label: viz-setup
+import pandas as pd
+import numpy as np
+import plotly.express as px
+import plotly.graph_objects as go
+
+panel = pd.read_csv("../data/processed/panel_cma.csv")
+
+# Static CMA centroid lookup. Values are approximate city-hall coordinates sufficient
+# for a country-scale choropleth-style bubble map. Keys match the panel's geo_key
+# strings exactly, including the latin-1 encoding artefacts that survive StatCan's
+# CSV pipeline (e.g. "montrã©al" for "montréal").
+CMA_COORDS = {
+    "abbotsford-mission, british columbia": (49.05, -122.33),
+    "barrie, ontario": (44.39, -79.69),
+    "brantford, ontario": (43.14, -80.27),
+    "calgary, alberta": (51.05, -114.07),
+    "chilliwack, british columbia": (49.17, -121.96),
+    "drummondville, quebec": (45.88, -72.48),
+    "edmonton, alberta": (53.55, -113.49),
+    "fredericton, new brunswick": (45.96, -66.64),
+    "greater sudbury, ontario": (46.49, -80.99),
+    "guelph, ontario": (43.55, -80.25),
+    "halifax, nova scotia": (44.65, -63.58),
+    "hamilton, ontario": (43.26, -79.87),
+    "kamloops, british columbia": (50.68, -120.34),
+    "kelowna, british columbia": (49.88, -119.50),
+    "kingston, ontario": (44.23, -76.49),
+    "kitchener-cambridge-waterloo, ontario": (43.45, -80.50),
+    "lethbridge, alberta": (49.70, -112.83),
+    "london, ontario": (42.98, -81.25),
+    "moncton, new brunswick": (46.09, -64.79),
+    "montrã©al, quebec": (45.51, -73.57),
+    "nanaimo, british columbia": (49.17, -123.94),
+    "oshawa, ontario": (43.90, -78.85),
+    "ottawa-gatineau, ontario/quebec": (45.42, -75.70),
+    "peterborough, ontario": (44.31, -78.32),
+    "quã©bec, quebec": (46.81, -71.21),
+    "red deer, alberta": (52.27, -113.80),
+    "regina, saskatchewan": (50.45, -104.62),
+    "saguenay, quebec": (48.43, -71.07),
+    "saint john, new brunswick": (45.27, -66.07),
+    "saskatoon, saskatchewan": (52.13, -106.67),
+    "sherbrooke, quebec": (45.40, -71.89),
+    "st. catharines-niagara, ontario": (43.17, -79.24),
+    "st. john's, newfoundland and labrador": (47.56, -52.71),
+    "thunder bay, ontario": (48.38, -89.25),
+    "toronto, ontario": (43.65, -79.38),
+    "trois-riviã¨res, quebec": (46.34, -72.54),
+    "vancouver, british columbia": (49.28, -123.12),
+    "victoria, british columbia": (48.43, -123.37),
+    "windsor, ontario": (42.32, -83.04),
+    "winnipeg, manitoba": (49.90, -97.14),
+}
+
+# Reconstruct the cma_size tertile classification used everywhere else in the
+# project (based on pre-COVID population, 2016–2018 median).
+_ref = (
+    panel.loc[panel["year"].between(2016, 2018, inclusive="both")]
+    .groupby("geo_key")["population"].median().dropna()
+)
+_q1, _q2 = _ref.quantile([1/3, 2/3]).astype(float)
+_size_map = {k: ("Small" if v <= _q1 else "Medium" if v <= _q2 else "Large") for k, v in _ref.items()}
+panel["cma_size"] = panel["geo_key"].map(_size_map).fillna("Unknown")
+
+# Attach coordinates for the map.
+panel["lat"] = panel["geo_key"].map(lambda k: CMA_COORDS.get(k, (np.nan, np.nan))[0])
+panel["lon"] = panel["geo_key"].map(lambda k: CMA_COORDS.get(k, (np.nan, np.nan))[1])
+panel = panel.sort_values(["geo_key", "year"]).reset_index(drop=True)
+
+# A cleaner display name that fixes the latin-1 artefacts for the hover text.
+_display_name = {
+    "montrã©al, quebec": "Montréal, Quebec",
+    "quã©bec, quebec": "Québec City, Quebec",
+    "trois-riviã¨res, quebec": "Trois-Rivières, Quebec",
+}
+
+def display_name(k: str) -> str:
+    if k in _display_name:
+        return _display_name[k]
+    return k.title().replace(" Of ", " of ")
+
+panel["cma_display"] = panel["geo_key"].map(display_name)
+```
+
+## Figure 1 — Net migration rate across Canada, 2001–2024
+
+This map places each of the 40 CMAs at its city-centre coordinates; bubble size is population, bubble colour is net intraprovincial migration rate (migrants per 1,000 residents, net of outflows). The year slider below the map animates the full 2001–2024 panel. Hover over any bubble to see the CMA name, year, rate, and population.
+
+```{python}
+#| label: viz-map
+map_df = panel.dropna(subset=["lat", "lon", "net_intraprovincial_rate", "population"]).copy()
+fig1 = px.scatter_geo(
+    map_df,
+    lat="lat", lon="lon",
+    size="population",
+    size_max=40,
+    color="net_intraprovincial_rate",
+    color_continuous_scale="RdBu",
+    range_color=(-12, 12),
+    hover_name="cma_display",
+    hover_data={
+        "lat": False, "lon": False, "year": True,
+        "net_intraprovincial_rate": ":.2f",
+        "net_interprovincial_rate": ":.2f",
+        "population": ":,",
+    },
+    animation_frame="year",
+    scope="north america",
+    projection="conic conformal",
+    title=None,
+    labels={
+        "net_intraprovincial_rate": "Intra rate (per 1,000)",
+        "net_interprovincial_rate": "Inter rate (per 1,000)",
+        "population": "Population",
+    },
+    height=620,
+)
+fig1.update_geos(
+    visible=True,
+    resolution=50,
+    showland=True, landcolor="rgb(243, 243, 243)",
+    showocean=True, oceancolor="rgb(225, 235, 245)",
+    showcountries=True, countrycolor="rgb(200, 200, 200)",
+    lataxis_range=[41, 62], lonaxis_range=[-141, -52],
+)
+fig1.update_layout(
+    margin=dict(l=0, r=0, t=20, b=0),
+    coloraxis_colorbar=dict(title="Intraprov.<br>rate / 1,000"),
+)
+fig1.show()
+```
+
+::: {.figure-caption}
+Figure 1. Net intraprovincial migration rate per 1,000 population at each CMA, animated across 2001–2024.
+:::
+
+::: {.figure-description}
+The animation surfaces three patterns at a glance. First, the three largest metros (Toronto, Montréal, Vancouver) turn deep red in 2020–2022 — the COVID-era outflow to smaller CMAs. Second, the bluest bubbles over the panel period are commuter-range satellites: Barrie, Oshawa, Hamilton, Kelowna, Abbotsford — cities visibly pulling residents out of the adjacent metro. Third, Atlantic-Canada CMAs (Halifax, Moncton, St. John's) are relatively muted in earlier years but begin gaining in 2020–2024, consistent with the pandemic-era coast-ward trend.
+:::
+
+## Figure 2 — Interactive per-CMA migration time series
+
+Use the dropdown to pick a CMA; the chart then shows that CMA's **net interprovincial** and **net intraprovincial** migration rate from 2001 to 2024 as two separate, legend-toggleable lines. The range slider at the bottom lets you zoom to any sub-period (e.g. 2018–2024 to isolate the COVID window). The shaded band highlights 2020–2024.
+
+```{python}
+#| label: viz-timeseries
+ts = panel.dropna(subset=["net_interprovincial_rate", "net_intraprovincial_rate"]).copy()
+cmas_sorted = (
+    ts.sort_values("cma_display")
+    .drop_duplicates("geo_key")[["geo_key", "cma_display"]]
+    .reset_index(drop=True)
+)
+
+fig2 = go.Figure()
+# Two traces per CMA (inter, intra); all invisible initially except the first CMA.
+for i, row in cmas_sorted.iterrows():
+    sub = ts.loc[ts["geo_key"] == row["geo_key"]].sort_values("year")
+    fig2.add_trace(go.Scatter(
+        x=sub["year"], y=sub["net_interprovincial_rate"],
+        mode="lines+markers", name="Interprovincial",
+        line=dict(color="#1f77b4", width=2.2),
+        marker=dict(size=6),
+        visible=(i == 0),
+        hovertemplate="Year: %{x}<br>Inter rate: %{y:.2f}<extra></extra>",
+    ))
+    fig2.add_trace(go.Scatter(
+        x=sub["year"], y=sub["net_intraprovincial_rate"],
+        mode="lines+markers", name="Intraprovincial",
+        line=dict(color="#d62728", width=2.2),
+        marker=dict(size=6),
+        visible=(i == 0),
+        hovertemplate="Year: %{x}<br>Intra rate: %{y:.2f}<extra></extra>",
+    ))
+
+# Build dropdown buttons — each button flips visibility so only one CMA's two traces show.
+buttons = []
+n_cmas = len(cmas_sorted)
+for i, row in cmas_sorted.iterrows():
+    vis = [False] * (2 * n_cmas)
+    vis[2 * i] = True
+    vis[2 * i + 1] = True
+    buttons.append(dict(
+        label=row["cma_display"],
+        method="update",
+        args=[
+            {"visible": vis},
+            {"title": {"text": f"Net migration rate — {row['cma_display']}"}},
+        ],
+    ))
+
+fig2.update_layout(
+    title=f"Net migration rate — {cmas_sorted.loc[0, 'cma_display']}",
+    xaxis=dict(title="Year", rangeslider=dict(visible=True), type="linear"),
+    yaxis=dict(title="Rate per 1,000 population", zeroline=True, zerolinecolor="#888"),
+    updatemenus=[dict(
+        active=0, buttons=buttons,
+        x=0.01, xanchor="left", y=1.13, yanchor="top",
+        showactive=True, bgcolor="#f5f5f5",
+    )],
+    legend=dict(orientation="h", y=-0.25, x=0.5, xanchor="center"),
+    shapes=[dict(
+        type="rect", xref="x", yref="paper",
+        x0=2020, x1=2024, y0=0, y1=1,
+        fillcolor="rgba(240, 180, 120, 0.18)", line=dict(width=0),
+    )],
+    annotations=[dict(
+        x=2022, y=1.01, xref="x", yref="paper",
+        text="COVID window", showarrow=False,
+        font=dict(size=11, color="#8B5A00"),
+    )],
+    height=520, margin=dict(l=40, r=10, t=70, b=40),
+    hovermode="x unified",
+)
+fig2.show()
+```
+
+::: {.figure-caption}
+Figure 2. Per-CMA net migration rate, interprovincial and intraprovincial, with a CMA dropdown and an x-axis range slider. The orange band marks 2020–2024.
+:::
+
+::: {.figure-description}
+Exploring Toronto, Vancouver, and Montréal in turn shows the large-metro COVID out-migration story as a deep dip in the red (intraprovincial) line around 2020–2022, with the blue (interprovincial) line often staying flat or slightly improving. Selecting a mid-size commuter CMA like Kelowna or Kitchener–Cambridge–Waterloo flips the pattern: red spikes upward in the same COVID window. Smaller Atlantic CMAs (Moncton, Halifax, St. John's) show their own distinct late-panel rebound. This figure is useful for spot-checking whether the aggregate findings in the report hold up at the individual-CMA level.
+:::
+
+## Figure 3 — Rent deviation vs. intraprovincial rate, animated by year
+
+Each bubble is one CMA in one year: x-axis is the CMA's average rent minus the provincial median rent for that year (positive = more expensive than the provincial average), y-axis is net intraprovincial migration rate per 1,000, bubble size is population, and colour groups CMAs into Large/Medium/Small by pre-COVID population tertile. The year slider animates the annual scatter.
+
+```{python}
+#| label: viz-rent-scatter
+sc = panel.dropna(subset=["rent_deviation", "net_intraprovincial_rate", "population"]).copy()
+sc["cma_size"] = pd.Categorical(sc["cma_size"], categories=["Small", "Medium", "Large"], ordered=True)
+sc = sc.sort_values(["year", "cma_size", "cma_display"])
+fig3 = px.scatter(
+    sc,
+    x="rent_deviation",
+    y="net_intraprovincial_rate",
+    size="population",
+    size_max=45,
+    color="cma_size",
+    color_discrete_map={"Small": "#4E79A7", "Medium": "#59A14F", "Large": "#E15759"},
+    hover_name="cma_display",
+    hover_data={
+        "year": True,
+        "rent_deviation": ":.0f",
+        "net_intraprovincial_rate": ":.2f",
+        "population": ":,",
+        "cma_size": True,
+    },
+    animation_frame="year",
+    animation_group="geo_key",
+    labels={
+        "rent_deviation": "Average rent minus provincial median ($)",
+        "net_intraprovincial_rate": "Net intraprovincial rate (per 1,000)",
+        "cma_size": "CMA size",
+    },
+    height=580,
+)
+fig3.update_yaxes(zeroline=True, zerolinecolor="#888")
+fig3.update_xaxes(zeroline=True, zerolinecolor="#888")
+fig3.update_layout(
+    margin=dict(l=40, r=10, t=20, b=40),
+    legend=dict(orientation="h", y=-0.18, x=0.5, xanchor="center"),
+)
+fig3.show()
+```
+
+::: {.figure-caption}
+Figure 3. Rent deviation (CMA average rent minus provincial median) vs. net intraprovincial migration rate, bubble size = population, colour = pre-COVID CMA size tertile, animated across 2001–2024.
+:::
+
+::: {.figure-description}
+The within-year cross-section consistently shows large red (Large) bubbles clustered on the upper-right early in the panel (high rent, mild positive intraprov rate) and sliding into the lower-right in 2020–2022 (high rent, strongly negative intraprov rate) — the big-metro COVID out-migration signature. Mid-size blue/green bubbles stay above zero for most of the panel and swing further positive in the COVID window, corroborating the push–pull direction: when big-metro rents stay elevated while remote work becomes feasible, residents flow to mid-size CMAs with less rent pressure. The animation makes this geographic rebalancing visible year by year in a way that a static scatter cannot.
+:::

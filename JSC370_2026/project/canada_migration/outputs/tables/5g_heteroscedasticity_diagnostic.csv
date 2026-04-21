@@ -1,7 +1,7 @@
 outcome,model,slope_abs_resid_vs_log_pop,p_value,heteroscedastic_neg_slope_p05
 net_interprovincial_rate,OLS,-0.1238897938379743,0.11773746854303907,False
-net_interprovincial_rate,RandomForest,-0.08028017995412355,3.272116978372488e-07,True
+net_interprovincial_rate,RandomForest,-0.08028017995412357,3.2721169783724584e-07,True
 net_interprovincial_rate,XGBoost,-0.0016047482260900469,0.05482338390356453,False
 net_intraprovincial_rate,OLS,-0.5034941150017043,8.453284444971262e-10,True
-net_intraprovincial_rate,RandomForest,-0.26350327719019717,2.2339990294134133e-37,True
+net_intraprovincial_rate,RandomForest,-0.26350327719019717,2.233999029413318e-37,True
 net_intraprovincial_rate,XGBoost,-0.014049929032772988,0.006735342275608496,True
