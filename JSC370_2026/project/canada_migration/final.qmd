@@ -24,32 +24,32 @@ Raw StatCan bulk CSV files are gitignored due to size; the processed Census Metr
 
 ### Background
 
-Immigration has dominated recent Canadian coverage, but **internal** migration — the movement of residents between and within provinces — is what most immediately reshapes local labour markets, housing demand, and public-service planning (Chastko, 2021). Aggregate interprovincial flows have been relatively stable since the 1970s, but net migration at the Census Metropolitan Area (CMA) level is anything but: Toronto, Vancouver, and Montreal have all seen sustained out-migration in recent years, attributed largely to housing costs (McQuillan, 2024). Song et al. (2026) using the 2022 Canadian Housing Survey found that employment dominates stated reasons for interprovincial moves while housing quality and size dominate intraprovincial moves — a theoretical push–pull distinction we test in aggregate administrative data here.
+Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. From the early 1970s to the late 2010s, Canada’s aggregated number of interprovincial migrants is relatively stable (Chastko, 2021). However, the net interprovincial migration rate differs substantially across provinces. 
 
-A **push factor** is a local condition that encourages residents to leave: high rent relative to the provincial median, elevated unemployment, or an ageing demographic profile (which mechanically raises the death rate and reduces working-age inflow pressure). A **pull factor** is a condition that attracts residents: employment opportunity (captured inversely by the provincial unemployment rate), affordability (low `rent_deviation`), a concentration of knowledge-economy jobs (provincial R&D intensity), and international inflows that can either displace or complement internal migrants.
+Another source of instability lies in the destinations of internal migration. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these Census Metropolitan Areas (CMAs) have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024).
 
-### Two-tier goal
+The article by Song et al. (2026) explains the motivation for the movement within and across provinces, citing housing conditions and employment opportunities as the top reasons. These results are based on the Canadian Housing Survey conducted in 2022. 
 
-This project has a **primary** predictive goal and a **secondary** inferential goal.
+A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.
 
-- **Primary (prediction — RQ1, RQ2):** How much variance in CMA-level net internal migration rate can be explained by push and pull factors, using a train / holdout evaluation over time? Do one- or two-year lags on housing and labour predictors improve out-of-time prediction over the contemporaneous baseline?
-- **Secondary (inference — RQ3):** Is the 2020–2024 COVID period associated with a structural shift in migration, above and beyond what push–pull conditions predict, and does that shift differ by CMA size?
+### Project Goals
 
-### Research questions
+This project has a primary predictive goal and a secondary inferential goal.
 
-1. **RQ1 — Prediction.** How much variance in annual CMA net interprovincial and intraprovincial migration *rate* (per 1,000 residents) is explained by push–pull predictors, and which model family (linear, GAM, or tree-based) generalises best out of time?
-2. **RQ2 — Prediction, lag structure.** Does lagging housing (`rent_deviation`) and labour (`unemployment_rate`) predictors by one or two years improve out-of-time prediction above the contemporaneous baseline?
-3. **RQ3 — Inference.** Controlling for push–pull conditions, is the 2020–2024 period associated with a shift in migration trend, and is that shift different for large, medium, and small CMAs?
+**Primary (prediction):**
+- RQ1: How much variance in internal (interprovincial and intraprovincial) migration in Canada can be predicted by demographic and socioeconomic push and pull factors? 
+- RQ2: Extending RQ1, does lagging the key push/pull factor by one to two years improve out-of-time prediction of net migration above the contemporaneous baseline? For instance, increased rental pressure prompts people to move, but this effect is likely not immediate. 
+**Secondary (inference):** 
+- RQ3: Is the 2020–2024 Covid period associated with a structural shift in migration, and does that shift differ by CMA size? 
 
 ### Hypotheses
-
-1. **H1 (Push–pull asymmetry).** Housing position and demographic age structure drive intraprovincial migration; labour market conditions and knowledge-economy concentration drive interprovincial migration. This replicates the Song et al. (2026) survey finding in aggregate panel data.
-2. **H2 (Lag effect).** A one-year lag on housing predictors improves intraprovincial prediction; contemporaneous labour predictors dominate interprovincial prediction (job search resolves faster than a lease cycle).
-3. **H3 (COVID structural shift).** Large CMAs (Toronto, Vancouver, Montreal, Calgary, Ottawa–Gatineau) show systematic out-migration during 2020–2024 beyond what structural conditions alone predict; mid-sized CMAs are the primary destinations.
+- H1. The push and pull factors of the two types of migration are likely different. 
+- H2. The models with lagged variables are hypothesized to perform slightly better than the baseline models. 
+- H3. Large CMAs show systematic out-migration during the 2020-2024 period, while mid-sized CMAs are the primary destinations.
 
 ### Datasets
 
-Five Statistics Canada tables, all pulled programmatically via the bulk CSV endpoint (no API key required) and cached locally under `data/raw/`:
+All five tables are retrieved from Statistics Canada, using its API. Tables are cached locally for reusability and efficiency:
 
 - **17-10-0149-01** — Components of population change by CMA (outcome + intl\_inmigration + natural\_increase\_rate)
 - **17-10-0148-01** — Population estimates July 1 by CMA (`population`, `share_25_44`, `share_65plus`)
@@ -63,11 +63,23 @@ After cleaning, the merged panel contains **40 CMAs × 24 years = 960 CMA-year o
 
 ### Data acquisition
 
-The helper `pull_statcan(table_id)` downloads the StatCan bulk CSV ZIP, extracts the data CSV, and returns a pandas DataFrame. Each call is cached under `data/raw/` so subsequent renders skip the network. Geographic labels follow two incompatible conventions across tables (`"Toronto (CMA), Ontario"` vs. `"Toronto, Ontario"`); a `normalise_geo` function strips the type suffix, collapses whitespace, and lowercases, producing a canonical `geo_key` used in every join.
+The Statistics Canada API is used to pull tabular data over the year range 2001 to 2024 or the latest year for which data is available.
 
-### Cleaning, merging, and missingness (F2)
+The helper `pull_statcan(table_id)` downloads the StatCan bulk CSV ZIP, extracts the data CSV, and returns a pandas DataFrame. Each call is cached under `data/raw/` to avoid unnecessary API calls. 
 
-CMA-level tables are joined on `(geo_key, year)`; province-level tables are mapped to each CMA's province. Two CMAs (Belleville–Quinte West and the Ontario-part of Ottawa–Gatineau) show persistent **Cause B** (geography-mismatch) missingness in the rent table that normalisation cannot repair, and are dropped from the panel. One isolated **Cause C** (year-gap) missingness cell — Chilliwack 2006 `avg_rent` — is filled with the mean of 2005 and 2007. Every other CMA passes a ≤ 30 % per-unit missingness threshold on base source columns and is retained. Table 1 summarises the final missingness attribution after all fixes.
+To ensure datasets can be merged harmoniously, all tables have annually collected data. The geographic granularity for most tables is Census Metropolitan Area (CMA) and Census Agglomeration (CA). **The unit of analysis for this project is CMAs.** Thus, tables are filtered to rows that correspond to CMAs only, except for R&D table and unemployment rates table.
+
+### Cleaning, merging, and missingness
+Geographic labels follow two incompatible conventions across tables (`"Toronto (CMA), Ontario"` vs. `"Toronto, Ontario"`); a `normalise_geo` function strips the type suffix, collapses whitespace, and lowercases, producing a consistent `geo_key` used in every join.
+
+Null values can occur for 3 reasons: 
+  1. Statistical suppresion, where Statistics Canada withholds values for small geographic areas
+  2. Geographic mismatch, where the CMA key in a df does not match any key in the main table
+  3. Isolated year gaps, where a CMA existed in a source table but was missing for a small number of years
+
+To make the treatment of missingness reproducible, first, if a CMA could not be matched consistently to the harmonized geography key after normalization, it was dropped. This occurred for the rent series of Belleville–Quinte West and Ottawa–Gatineau (Ontario part). Second, if a CMA had a single missing year within an otherwise complete time series, I used imputation. Specifically, Chilliwack was missing rent data for 2006, so that value was imputed as the mean of the adjacent observed years 2005 and 2007. Any broader missingness that could not be justified by a clear harmonization rule was handled by exclusion.
+
+Table 1 provides the missingness summary after all the fixes.
 
 ```{python}
 #| label: tbl-nan-diagnosis
@@ -122,39 +134,39 @@ print(html_table(nan_df, {"total_nan": "{:.0f}", "cause_a": "{:.0f}", "cause_b":
 
 ### Feature engineering: rate target
 
-Net migration counts scale mechanically with CMA population — Toronto's count at 6.5 M residents dominates any squared-error loss against Moncton's at 160 k. To make the OLS homoscedasticity assumption tenable and to let per-capita coefficients be interpretable, the primary target is **net migration rate per 1,000 population**:
+Net migration counts are related to CMA population. Toronto's count at 6.5 M residents dominates any squared-error loss against small CMAs. Therefore, the primary target is **net migration rate per 1,000 population**:
 
 $$
 \text{rate}_{i,t} \;=\; \frac{\text{net migration}_{i,t}}{\text{population}_{i,t}} \times 1000
 $$
 
-Both `net_interprovincial_rate` and `net_intraprovincial_rate` are constructed in Step 3.5 of the analysis pipeline. Because migration rates themselves still correlate with urban scale (larger metros show systematically different per-capita dynamics), `log_population` is retained as a predictor.
+Both `net_interprovincial_rate` and `net_intraprovincial_rate` are constructed right after the merge. Because migration rates themselves still correlate with population, `log_population` is retained as a predictor.
 
-### Splits and evaluation (F3, F7)
+### Splits and Model Evaluation
 
-Two distinct evaluation regimes, driven by the two project goals:
+Two distinct evaluation schemes, driven by the two project goals:
 
-- **Prediction (RQ1, RQ2).** Time-based holdout: **train = 2001–2018, test = 2019–2024**. Hyperparameters are tuned inside the train window with a **5-fold `TimeSeriesSplit`** on years (fold *k* trains on earlier years, validates on later years). A random 80/20 split was considered as a robustness check but **rejected**: random assignment on a CMA-year panel places 2024 rows into training and 2019 rows into test, which is straightforward future-information leakage. Time-based is the only honest evaluation for panel prediction.
-- **Inference (RQ3).** Fit on the **full 2001–2024 panel with no split**. Test R² is not reported for inferential models — the object of inference is the coefficient and its HC3 robust standard error, not out-of-sample generalisation.
+- **Prediction (RQ1, RQ2).** Splitting by time: train = 2001–2018, test = 2019–2024. Hyperparameters are tuned inside the train set with a 5-fold `TimeSeriesSplit` on years (fold k trains on earlier years, validates on later years). A random 80/20 split was not appropriate: random assignment on a CMA-year panel places year 2024's rows into training and year 2019's rows into test, which constitutes data leakage. 
+- **Inference (RQ3).** Fit on the full 2001–2024 panel with no split. Test $R^2$ is not reported for inferential models; estimated coefficients and the HC3 robust standard error are reported, rather than out-of-time performance.
 
-### Variance inflation and feature reduction (F4)
+### Variance inflation and feature reduction
 
-To guide feature selection for the linear and GAM specifications, Variance Inflation Factors (VIF) are computed on the training-panel feature set; VIF > 10 flags a predictor that is linearly explained by the others. On the broad feature set the train-only VIFs flag `log_population` (1452), `participation_rate` (1204), `share_25_44` (539), and `share_65plus` (160) — all indicating the three population-structure variables and labour-force participation carry overlapping information. The reduced predictor set used for every model drops `avg_rent`, `participation_rate`, and `share_25_44`; `log_population` and `share_65plus` are retained because the dominant remaining signal they carry is distinct and because tree models are not affected by linear collinearity.
+To guide feature selection for the linear modeland GAM, Variance Inflation Factors (VIF) are computed on the training-panel feature set. On the broad feature set the VIFs flag `log_population` (VIF=1452), `participation_rate` (1204), `share_25_44` (539), and `share_65plus` (160) — all indicating the three population-structure variables and labour-force participation contain overlapping information. The reduced predictor set used for every model drops `avg_rent`, `participation_rate`, and `share_25_44`.`log_population` and `share_65plus` are retained because the dominant remaining signal they carry is distinct and because tree models are not affected by collinearity.
 
 ### Models
 
-**Predictive models (RQ1 — six candidates).** All evaluated on the same 5-fold year-based CV inside train, then scored once on the 2019–2024 holdout.
+**Predictive models (RQ1 — six candidates).** All evaluated on the same 5-fold year-based CV inside training set, then scored once on the 2019–2024 holdout test set.
 
-- **OLS**, **Ridge** (grid-search α ∈ 10^{-3}..10^2, 25 values), **Lasso** (same grid) — linear interpretability anchors.
-- **Generalised Additive Model (`pygam.LinearGAM`)** — splines on numeric features, linear terms on one-hot CMA-size dummies.
-- **Random Forest** — `RandomizedSearchCV` over 30 candidate configurations spanning `n_estimators ∈ {200,400,600,800}`, `max_depth ∈ {3,5,8,12,None}`, `max_features ∈ {sqrt, log2, 0.5, 0.8}`, `min_samples_leaf ∈ {1,2,5,10}`.
-- **XGBoost (`hist` tree method)** — `RandomizedSearchCV` over 30 candidates spanning `n_estimators ∈ {200,400,600,1000}`, `max_depth ∈ {3,5,7,9}`, `learning_rate ∈ {0.01,0.03,0.05,0.1}`, and subsample / colsample\_bytree grids.
+- **OLS**, **Ridge** (grid-search α ∈ 10^{-3}..10^2, 25 values), **Lasso** (same grid). These are the baseline models 
+- **Generalised Additive Model (`pygam.LinearGAM`)**: uses splines on numeric features and linear terms on one-hot CMA-size dummies.
+- **Random Forest**: `RandomizedSearchCV` draws 30 samples from a 320-combinations grid (`n_estimators ∈ {200,400,600,800}`, `max_depth ∈ {3,5,8,12,None}`, `max_features ∈ {sqrt,log2,0.5,0.8}`, `min_samples_leaf ∈ {1,2,5,10}`).
+- **XGBoost (`hist` tree method)**: `RandomizedSearchCV` draws 30 samples from a 576-combinations grid (`n_estimators ∈ {200,400,600,1000}`, `max_depth ∈ {3,5,7,9}`, `learning_rate ∈ {0.01,0.03,0.05,0.1}`, `subsample ∈ {0.6,0.8,1.0}`, `colsample_bytree ∈ {0.6,0.8,1.0}`).
 
-Variable importance is reported for the tree winners via (i) native `feature_importances_` (Gini for RF, gain for XGBoost) and (ii) model-agnostic **permutation importance** on the holdout (`n_repeats=30`). Residual-vs-`log_population` diagnostics flag heteroscedasticity; a population-weighted OLS robustness refit is reported alongside the unweighted baseline.
+Variable importance is reported for the best tree models via (i) native `feature_importances_` (Gini for RF, gain for XGBoost) and (ii) model-agnostic **permutation importance** on the holdout (`n_repeats=30`). Residual-vs-`log_population` diagnostics flag heteroscedasticity; a population-weighted OLS robustness refit is reported alongside the unweighted baseline.
 
 **Lag specifications (RQ2).** For both outcomes, OLS and a default-hyperparameter XGBoost are refit with `rent_deviation` and `unemployment_rate` lagged by one and two years, producing three specifications (contemporaneous / +lag1 / +lag1+lag2). Selection is by 5-fold CV RMSE inside train.
 
-**Inferential model (RQ3 — F8).** Pooled OLS with HC3 robust standard errors on the full panel, per outcome:
+**Inferential model (RQ3).** Pooled OLS with HC3 robust standard errors on the full panel, per outcome:
 
 $$
 \begin{aligned}
@@ -174,6 +186,14 @@ Python 3.11 with `pandas`, `numpy`, `scikit-learn`, `xgboost`, `pygam`, `statsmo
 ## Results
 
 ### Primary — Prediction
+
+#### EDA on source tables
+
+![Figure 1. National aggregate net interprovincial and intraprovincial migration across CMAs, 2001–2024. Net intraprovincial migration is relatively stable until 2015 then declines — reaching its minimum in 2021 before partially recovering — while interprovincial migration turns sharply negative only during the Covid period.](outputs/figures/2a_pop_national_inter_intra_timeseries.png){width="95%"}
+
+![Figure 2. Distribution of net interprovincial and intraprovincial migration across CMA-years. Both distributions are roughly symmetric and centred near zero; the thin but heavy tails motivate using tree-based models alongside OLS, which can be disproportionately pulled toward rare extreme observations.](outputs/figures/2a_pop_distribution_inter_vs_intra.png){width="95%"}
+
+Median rent across CMAs rises monotonically from approximately \$600 in 2001 to nearly \$1,400 in 2024, with the sharpest acceleration after 2015. Provincial unemployment rates follow broadly similar trajectories — with a shared spike in 2020 — but differ substantially in level: Newfoundland and Labrador records the highest rates throughout the study period.
 
 #### Summary statistics and distribution shift
 
@@ -203,9 +223,9 @@ print(
 
 Mean `avg_rent` nearly doubled between the training window and the holdout (from about $780 to $1,350), and mean international in-migration per CMA-year roughly tripled. Both shifts make the holdout a genuine out-of-distribution test for any model trained on 2001–2018.
 
-![Figure 1. Distribution of net migration rate by period and CMA size (train and holdout combined). The bottom row shows large CMAs lost a dramatic share of intraprovincial residents in 2020–2024; the top row shows no comparable shift for interprovincial rate.](outputs/figures/4d_migration_distribution_shift_pre_covid_post.png){width="95%"}
+![Figure 3. Distribution of net migration rate by period and CMA size (train and holdout combined). The bottom row shows large CMAs lost a dramatic share of intraprovincial residents in 2020–2024; the top row shows no comparable shift for interprovincial rate.](outputs/figures/4d_migration_distribution_shift_pre_covid_post.png){width="95%"}
 
-![Figure 2. Spearman correlation heatmap on the training panel. `share_65plus`, `rent_deviation`, and `unemployment_rate` correlate with the two migration rate outcomes; the two outcomes are near-independent of each other.](outputs/figures/4b_feature_correlation_heatmap_train.png){width="90%"}
+![Figure 4. Spearman correlation heatmap on the training panel. `share_65plus`, `rent_deviation`, and `unemployment_rate` correlate with the two migration rate outcomes; the two outcomes are near-independent of each other.](outputs/figures/4b_feature_correlation_heatmap_train.png){width="90%"}
 
 #### Model comparison
 
@@ -237,7 +257,7 @@ The GAM underperformed both the linear and tree models, with negative CV R² for
 
 #### Feature importance
 
-![Figure 3. Random Forest permutation-importance ranking on the 2019–2024 holdout — net interprovincial rate (left) and net intraprovincial rate (right). `share_65plus`, `rent_deviation`, and `intl_inmigration` dominate both outcomes; `cma_size` and `log_population` contribute meaningfully to interprovincial.](outputs/figures/5f_importance_net_interprovincial_rate_randomforest_permutation_test.png){width="48%"}
+![Figure 5. Random Forest permutation-importance ranking on the 2019–2024 holdout — net interprovincial rate (left) and net intraprovincial rate (right). `share_65plus`, `rent_deviation`, and `intl_inmigration` dominate both outcomes; `cma_size` and `log_population` contribute meaningfully to interprovincial.](outputs/figures/5f_importance_net_interprovincial_rate_randomforest_permutation_test.png){width="48%"}
 ![](outputs/figures/5f_importance_net_intraprovincial_rate_randomforest_permutation_test.png){width="48%"}
 
 Permutation importance on the holdout (model-agnostic, sensitive to out-of-time generalisation) ranks `share_65plus` as the single most useful predictor for both outcomes, followed by `rent_deviation` and `intl_inmigration`. Year carries essentially zero importance once structural features are in, confirming that most of the temporal signal is already absorbed by year-varying predictors rather than a bare calendar trend.
@@ -278,31 +298,31 @@ print(html_table(rq3_intra, rq3_fmt))
 
 Plain-language interpretation of the key coefficients:
 
-- **Interprovincial `year:post_covid` = −0.72 (p = 0.04).** The year trend for large CMAs (the reference size category) drops by about 0.72 per-1,000 per year after 2020, consistent with a real COVID-era reversal of the pre-pandemic interprovincial trajectory for big metros. The large positive `post_covid` main effect (+1 447) is offset by the negative `year:post_covid` — these two terms should be read jointly rather than individually, and their joint fit produces the non-linear trajectory visible in Figure 4.
+- **Interprovincial `year:post_covid` = −0.72 (p = 0.04).** The year trend for large CMAs (the reference size category) drops by about 0.72 per-1,000 per year after 2020, consistent with a real COVID-era reversal of the pre-pandemic interprovincial trajectory for big metros. The large positive `post_covid` main effect (+1 447) is offset by the negative `year:post_covid` — these two terms should be read jointly rather than individually, and their joint fit produces the non-linear trajectory visible in Figure 6.
 - **Interprovincial `post_covid:cma_size[Medium]` = −2.04 (p = 0.06).** Marginal: medium CMAs do not show the same post-2020 boost that large CMAs briefly showed (before the trend fell), consistent with interprovincial flows being dominated by major-metro dynamics rather than mid-size pull.
 - **Interprovincial structural effects.** `rent_deviation` is positive ($+0.009$ per $1 deviation, p < 10^{-7}$) — CMAs with above-province rents still attract net interprovincial in-migration, reflecting the job-opportunity pull that Song et al. (2026) identify. `unemployment_rate` has coefficient $-0.56$ ($p < 10^{-9}$) — each percentage point of provincial unemployment removes more than half a migrant per 1,000, the single largest structural effect on the interprovincial side.
 - **Intraprovincial size effects.** Medium and small CMAs gain 2.60 and 2.83 more intraprovincial migrants per 1,000 than large CMAs over the entire study window ($p \le 0.002$ for both). This baseline redistribution within provinces exists independently of COVID and dwarfs the estimated pandemic shock.
-- **Intraprovincial `year:post_covid` = −0.43 (p = 0.14).** The COVID-period trend break is not statistically significant on the intraprovincial side once baseline size effects and structural features are controlled — at least on the linear specification. The non-linear GAM (Figure 5) shows a pronounced dip in 2020–2022 for intraprovincial, suggesting the linear interaction is under-powered to capture the shape.
+- **Intraprovincial `year:post_covid` = −0.43 (p = 0.14).** The COVID-period trend break is not statistically significant on the intraprovincial side once baseline size effects and structural features are controlled — at least on the linear specification. The non-linear GAM (Figure 7) shows a pronounced dip in 2020–2022 for intraprovincial, suggesting the linear interaction is under-powered to capture the shape.
 - **Intraprovincial `intl_inmigration` = −0.00012 (p < 10^{-18}).** International in-migration has a strong negative association with intraprovincial net flows: CMAs receiving more international migrants tend to lose residents to other CMAs in the same province, consistent with a displacement or housing-pressure mechanism.
 
-![Figure 4. GAM partial effect of year on net interprovincial rate, on the full panel. The vertical dashed line marks 2020; the smooth captures the sharp dip and partial rebound that a linear `year:post_covid` specification can only approximate.](outputs/figures/7_gam_partial_effects_net_interprovincial_rate.png){width="85%"}
+![Figure 6. GAM partial effect of year on net interprovincial rate, on the full panel. The vertical dashed line marks 2020; the smooth captures the sharp dip and partial rebound that a linear `year:post_covid` specification can only approximate.](outputs/figures/7_gam_partial_effects_net_interprovincial_rate.png){width="85%"}
 
-![Figure 5. GAM partial effect of year on net intraprovincial rate. The 2020–2022 dip and 2023 partial rebound are visible; the OLS `year:post_covid` interaction did not reach significance because the shape is non-monotone.](outputs/figures/7_gam_partial_effects_net_intraprovincial_rate.png){width="85%"}
+![Figure 7. GAM partial effect of year on net intraprovincial rate. The 2020–2022 dip and 2023 partial rebound are visible; the OLS `year:post_covid` interaction did not reach significance because the shape is non-monotone.](outputs/figures/7_gam_partial_effects_net_intraprovincial_rate.png){width="85%"}
 
 ## Conclusions
 
-**Primary finding (prediction).** Push–pull structural predictors explain substantially more variance in CMA-level intraprovincial migration rate (RF holdout R² = 0.42) than in interprovincial rate (RF holdout R² = 0.30). The best models are tree-based, and they beat linear baselines by roughly 0.20 in holdout R² for both outcomes — nonlinearity and feature interactions are real and material. Lag structure helps the interprovincial XGBoost (contemporaneous R² 0.20 → lag1+lag2 R² 0.28) but not the intraprovincial model. The dominant predictors across models are demographic age structure (`share_65plus`), housing position (`rent_deviation`), and international inflow pressure (`intl_inmigration`), with `rd_provincial` and `unemployment_rate` specifically important for interprovincial flows. This replicates the Song et al. (2026) CHS finding in aggregate administrative data: interprovincial flows are labour-and-opportunity driven, intraprovincial flows are housing-and-demographic driven (H1 supported).
+**Primary finding (prediction).** Push and pull factors explain more variance in CMA-level intraprovincial migration rate (RF holdout R² = 0.42) than interprovincial rate (RF holdout R² = 0.30). The best models are tree-based, beating linear baselines by roughly 0.20 in holdout R² for both outcomes, suggesting nonlinearity and feature interactions exist and are meaningful. Lag structure helps the interprovincial XGBoost (contemporaneous R² 0.20 vs. lag1+lag2 R² 0.28) but not the intraprovincial model. The dominant predictors across models are demographic age structure (`share_65plus`), housing position (`rent_deviation`), and international inflow pressure (`intl_inmigration`), with `rd_provincial` and `unemployment_rate` specifically important for interprovincial flows. This replicates the Song et al. (2026) finding in aggregate administrative data: interprovincial flows are labour-and-opportunity driven, while intraprovincial flows are housing-and-demographic driven, supporting H1.
 
 **Secondary finding (inference).** On the interprovincial side, a significant year-by-post-2020 trend break is detected for large CMAs (coefficient $-0.72$, $p = 0.04$). On the intraprovincial side the linear interaction does not reach significance ($p = 0.14$), but the GAM partial-effect plot shows a clear non-linear 2020–2022 dip — the shape of the COVID shock is not well-approximated by a single trend-break term. Baseline intraprovincial gains for medium (+2.60) and small (+2.83) CMAs over large CMAs are robust and large relative to any estimated COVID shift, suggesting the long-running suburban-growth pattern dwarfs the pandemic shock in magnitude even if the pandemic accelerated it briefly.
 
 **Limitations.**
 
-- **Province-level labour market and R&D features.** `unemployment_rate`, `participation_rate`, and `rd_provincial` are assigned at the province level, washing out sub-provincial variation. CMAs within the same province share predictor values, which caps identifiable structural effects for the interprovincial model.
+- **Province-level labour market and R&D features.** `unemployment_rate`, `participation_rate`, and `rd_provincial` are assigned at the province level, which disregards sub-provincial variation. CMAs within the same province share predictor values, which limits the ability to identify push and pull factors for the interprovincial model.
 - **Boundary revisions.** 2021 CMA boundaries are used throughout; pre-2016 panel rows for CMAs whose definitions changed carry mild definitional drift.
 - **Rate-target noise for small CMAs.** A 300-person swing in a 100 k-population CMA becomes a visible rate shock. The residual diagnostic confirmed heteroscedasticity for intraprovincial OLS; population-weighted OLS is a robustness variant but a Poisson GLM with `log(population)` offset would be the cleaner alternative for future work.
-- **GAM specification.** The per-size GAM `s(year, by=cma_size)` originally planned was not implemented — only a global `s(year)` is fit. A by-size smooth would cleanly separate COVID trajectories across large/medium/small CMAs and is flagged for future work.
+<!-- - **GAM specification.** The per-size GAM `s(year, by=cma_size)` originally planned was not implemented — only a global `s(year)` is fit. A by-size smooth would cleanly separate COVID trajectories across large/medium/small CMAs and is flagged for future work. -->
 
-**Future work.** A Poisson or negative-binomial GLM with `log(population)` offset would natively model counts while avoiding the small-denominator noise issue and is the recommended next specification. Incorporating CMA-level labour market data (when StatCan's CMA unemployment series becomes available) would strengthen the interprovincial model substantively. Finally, a k-means CMA typology cross-tabulated with COVID residual sign could test whether the shock concentrates in specific structural-cluster types rather than the coarse large/medium/small classification used here.
+<!-- **Future work.** A Poisson or negative-binomial GLM with `log(population)` offset would natively model counts while avoiding the small-denominator noise issue and is the recommended next specification. Incorporating CMA-level labour market data (when StatCan's CMA unemployment series becomes available) would strengthen the interprovincial model substantively. Finally, a k-means CMA typology cross-tabulated with COVID residual sign could test whether the shock concentrates in specific structural-cluster types rather than the coarse large/medium/small classification used here. -->
 
 ## References
 
