@@ -1,0 +1,101 @@
+/* Minor overrides on top of the Bootstrap "cosmo" theme. */
+
+:root {
+  --site-accent: #2c5f8d;
+}
+
+.quarto-title-block .quarto-title .title {
+  font-weight: 600;
+  color: var(--site-accent);
+}
+
+.navbar {
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.hero-block {
+  background: linear-gradient(180deg, #f2f6fb 0%, #ffffff 100%);
+  padding: 2rem 1.5rem;
+  border-radius: 10px;
+  margin-bottom: 2rem;
+  border: 1px solid #e6eef6;
+}
+
+.hero-block h2 {
+  margin-top: 0;
+  color: var(--site-accent);
+}
+
+.figure-caption {
+  font-style: italic;
+  color: #4b5563;
+  margin-top: 0.5rem;
+  margin-bottom: 0.25rem;
+}
+
+.figure-description {
+  font-size: 0.95rem;
+  color: #374151;
+  margin-bottom: 2rem;
+  line-height: 1.55;
+}
+
+.card-link {
+  display: block;
+  padding: 1rem 1.25rem;
+  background: #ffffff;
+  border: 1px solid #e6eef6;
+  border-radius: 8px;
+  margin-bottom: 0.75rem;
+  text-decoration: none;
+  color: #1f2937;
+  transition: border-color 0.15s, transform 0.15s;
+}
+
+.card-link:hover {
+  border-color: var(--site-accent);
+  transform: translateY(-1px);
+}
+
+.card-link .card-title {
+  font-weight: 600;
+  color: var(--site-accent);
+  margin-bottom: 0.25rem;
+}
+
+.card-link .card-sub {
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+/* Table styling reused from the report */
+.report-table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+  margin-bottom: 1rem;
+}
+
+.report-table th,
+.report-table td {
+  border: 1px solid #e5e7eb;
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+}
+
+.report-table th {
+  background: #f3f6fa;
+}
+
+.report-table td.num,
+.report-table th.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.table-caption {
+  font-size: 0.9rem;
+  color: #4b5563;
+  margin-bottom: 0.35rem;
+  font-style: italic;
+}
