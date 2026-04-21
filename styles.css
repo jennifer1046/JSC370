@@ -1,90 +1,230 @@
-/* Minor overrides on top of the Bootstrap "cosmo" theme. */
+/* McKinsey-inspired styling on top of the Bootstrap cosmo base.
+   Goals: Oxford-navy palette, serif body + sans display, minimal
+   decoration, generous whitespace, tables with only top/bottom rules. */
 
 :root {
-  --site-accent: #2c5f8d;
+  --mk-navy:    #051C2C;
+  --mk-navy-2:  #0A2540;
+  --mk-accent:  #2251FF;
+  --mk-ink:     #0a0a0a;
+  --mk-body:    #1a1a1a;
+  --mk-mute:    #6a6a6a;
+  --mk-rule:    #dddddd;
+  --mk-rule-strong: var(--mk-navy);
+  --mk-surface: #f4f4f4;
+  --mk-paper:   #ffffff;
+}
+
+/* Body: serif for long-form reading. */
+body,
+.quarto-container,
+main {
+  font-family: "Charter", "Iowan Old Style", "Georgia", "Times New Roman", serif;
+  color: var(--mk-body);
+  background: var(--mk-paper);
+  line-height: 1.65;
+  font-size: 17px;
+}
+
+/* Display, navigation, captions, and tables: clean sans. */
+h1, h2, h3, h4, h5, h6,
+.navbar, .nav-link, .navbar-brand,
+.card-title, .card-sub,
+.figure-caption, .table-caption, .figure-description,
+.report-table,
+.page-footer, .nav-footer,
+.lead-label {
+  font-family: "Inter", "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Arial", sans-serif;
+}
+
+h1 {
+  font-weight: 700;
+  color: var(--mk-navy);
+  letter-spacing: -0.02em;
+  font-size: 2.1rem;
+}
+
+h2 {
+  font-weight: 600;
+  color: var(--mk-navy);
+  border-top: 1px solid var(--mk-rule);
+  padding-top: 1.5rem;
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-weight: 600;
+  color: var(--mk-navy);
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.2rem;
+}
+
+h4 {
+  font-weight: 600;
+  color: var(--mk-navy-2);
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* Links */
+a {
+  color: var(--mk-accent);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(34, 81, 255, 0.3);
+  transition: border-color 0.15s, color 0.15s;
+}
+
+a:hover {
+  color: var(--mk-navy);
+  border-bottom-color: var(--mk-navy);
+}
+
+/* Navbar */
+.navbar {
+  background: var(--mk-navy) !important;
+  border-bottom: none;
+  box-shadow: none;
+  padding: 0.9rem 1.25rem;
+}
+
+.navbar .navbar-brand,
+.navbar .nav-link {
+  color: #ffffff !important;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  border-bottom: none;
+}
+
+.navbar .navbar-brand {
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: 0.01em;
+}
+
+.navbar .nav-link:hover {
+  color: #9ab0ff !important;
+}
+
+/* Title block under the navbar */
+.quarto-title-block {
+  border-bottom: 2px solid var(--mk-navy);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
 }
 
 .quarto-title-block .quarto-title .title {
-  font-weight: 600;
-  color: var(--site-accent);
+  font-weight: 700;
+  color: var(--mk-navy);
+  font-size: 2.2rem;
+  letter-spacing: -0.025em;
+  line-height: 1.15;
 }
 
-.navbar {
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.hero-block {
-  background: linear-gradient(180deg, #f2f6fb 0%, #ffffff 100%);
-  padding: 2rem 1.5rem;
-  border-radius: 10px;
-  margin-bottom: 2rem;
-  border: 1px solid #e6eef6;
-}
-
-.hero-block h2 {
-  margin-top: 0;
-  color: var(--site-accent);
-}
-
-.figure-caption {
-  font-style: italic;
-  color: #4b5563;
+.quarto-title-block .quarto-title .subtitle,
+.quarto-title-block .subtitle {
+  font-size: 1.15rem;
+  color: var(--mk-mute);
+  font-weight: 400;
   margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Helvetica Neue", sans-serif;
 }
 
-.figure-description {
-  font-size: 0.95rem;
-  color: #374151;
-  margin-bottom: 2rem;
-  line-height: 1.55;
+/* Navigation grid on the landing page */
+.nav-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0;
+  margin: 2rem 0 3rem;
+  border-top: 2px solid var(--mk-navy);
+  border-bottom: 2px solid var(--mk-navy);
 }
 
 .card-link {
   display: block;
-  padding: 1rem 1.25rem;
-  background: #ffffff;
-  border: 1px solid #e6eef6;
-  border-radius: 8px;
-  margin-bottom: 0.75rem;
+  padding: 1.5rem 1.25rem 1.4rem;
+  border-right: 1px solid var(--mk-rule);
+  background: var(--mk-paper);
+  color: var(--mk-body);
   text-decoration: none;
-  color: #1f2937;
-  transition: border-color 0.15s, transform 0.15s;
+  border-bottom: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.nav-cards > .card-link:last-child {
+  border-right: none;
 }
 
 .card-link:hover {
-  border-color: var(--site-accent);
-  transform: translateY(-1px);
+  background: var(--mk-navy);
+  color: var(--mk-paper);
+}
+
+.card-link:hover .card-title,
+.card-link:hover .card-sub,
+.card-link:hover code {
+  color: var(--mk-paper);
 }
 
 .card-link .card-title {
-  font-weight: 600;
-  color: var(--site-accent);
-  margin-bottom: 0.25rem;
+  font-weight: 700;
+  color: var(--mk-navy);
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .card-link .card-sub {
   font-size: 0.9rem;
-  color: #4b5563;
+  color: var(--mk-mute);
+  line-height: 1.55;
+  font-weight: 400;
 }
 
-/* Table styling reused from the report */
+.card-link:hover code {
+  background: rgba(255, 255, 255, 0.12);
+  color: var(--mk-paper);
+}
+
+/* Tables — clean McKinsey rule style: top/bottom only, no verticals. */
 .report-table {
   border-collapse: collapse;
   width: 100%;
   font-size: 0.92rem;
-  margin-bottom: 1rem;
+  margin: 0.75rem 0 1.75rem;
 }
 
-.report-table th,
-.report-table td {
-  border: 1px solid #e5e7eb;
-  padding: 0.4rem 0.6rem;
+.report-table thead th {
+  border-top: 2px solid var(--mk-navy);
+  border-bottom: 1px solid var(--mk-navy);
+  background: var(--mk-paper);
+  color: var(--mk-navy);
+  padding: 0.55rem 0.75rem;
+  font-weight: 700;
   text-align: left;
+  text-transform: uppercase;
+  letter-spacing: 0.045em;
+  font-size: 0.78rem;
+  white-space: nowrap;
 }
 
-.report-table th {
-  background: #f3f6fa;
+.report-table tbody td {
+  border: none;
+  border-bottom: 1px solid var(--mk-rule);
+  padding: 0.5rem 0.75rem;
+}
+
+.report-table tr.group-gap td {
+  border-bottom: 2px solid var(--mk-navy);
+  padding: 0;
+  height: 0;
 }
 
 .report-table td.num,
@@ -93,9 +233,183 @@
   font-variant-numeric: tabular-nums;
 }
 
+.report-table tbody tr:last-child td {
+  border-bottom: 2px solid var(--mk-navy);
+}
+
 .table-caption {
-  font-size: 0.9rem;
-  color: #4b5563;
-  margin-bottom: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--mk-navy);
+  margin: 1rem 0 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+}
+
+.table-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin: 1rem 0;
+}
+
+.table-panel {
+  min-width: 0;
+}
+
+/* Figures */
+.figure-caption {
+  font-size: 0.78rem;
+  color: var(--mk-navy);
+  margin: 0.75rem 0 0.25rem;
+  font-style: normal;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 700;
+}
+
+.figure-description {
+  font-size: 0.92rem;
+  color: var(--mk-body);
+  line-height: 1.65;
+  margin: 0.25rem 0 2.5rem;
+  border-left: 3px solid var(--mk-navy);
+  padding: 0.1rem 0 0.1rem 0.9rem;
+}
+
+/* Code */
+code {
+  font-family: "JetBrains Mono", "IBM Plex Mono", "SF Mono", "Menlo", monospace;
+  background: var(--mk-surface);
+  padding: 0.08em 0.35em;
+  border-radius: 2px;
+  font-size: 0.87em;
+  color: var(--mk-navy);
+}
+
+pre,
+pre code {
+  background: var(--mk-surface);
+  color: var(--mk-body);
+  border: none;
+  border-left: 3px solid var(--mk-navy);
+  padding: 0.9rem 1rem;
+  border-radius: 0;
+  font-size: 0.85rem;
+}
+
+/* Footer */
+.nav-footer, .page-footer {
+  background: var(--mk-navy);
+  color: #ffffff;
+  font-size: 0.82rem;
+  padding: 1.25rem 1rem;
+  letter-spacing: 0.025em;
+  border-top: none;
+}
+
+.nav-footer a, .page-footer a {
+  color: #ffffff;
+  border-bottom-color: rgba(255, 255, 255, 0.4);
+}
+
+.nav-footer a:hover, .page-footer a:hover {
+  color: #9ab0ff;
+  border-bottom-color: #9ab0ff;
+}
+
+/* Table of contents in right rail */
+nav[role="doc-toc"] .nav-link {
+  color: var(--mk-mute);
+  border-bottom: none;
+  font-size: 0.85rem;
+}
+
+nav[role="doc-toc"] .nav-link.active,
+nav[role="doc-toc"] .nav-link:hover {
+  color: var(--mk-navy);
+  border-bottom: none;
+}
+
+/* Horizontal rule */
+hr {
+  border: none;
+  border-top: 1px solid var(--mk-rule);
+  margin: 2.5rem 0;
+}
+
+/* Lists */
+ul, ol {
+  line-height: 1.65;
+}
+
+ul li, ol li {
+  margin-bottom: 0.3rem;
+}
+
+/* Blockquotes */
+blockquote {
+  border-left: 3px solid var(--mk-navy);
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: var(--mk-body);
   font-style: italic;
+  margin: 1.5rem 0;
+}
+
+/* Lead paragraph */
+.lead {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  font-size: 1.1rem;
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--mk-body);
+  margin-bottom: 1.5rem;
+}
+
+/* Hero block — keep the class for backwards compat, but strip decoration. */
+.hero-block {
+  background: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  border: none;
+  border-radius: 0;
+}
+
+.hero-block h2 {
+  margin-top: 0;
+  border-top: none;
+  padding-top: 0;
+}
+
+/* Small labels (e.g. "Primary —", "Secondary —") */
+.lead-label {
+  font-size: 0.78rem;
+  color: var(--mk-navy);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 700;
+  margin-right: 0.35rem;
+}
+
+/* Images should not overflow on narrow screens */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive tweaks */
+@media (max-width: 720px) {
+  .nav-cards {
+    grid-template-columns: 1fr;
+  }
+  .card-link {
+    border-right: none;
+    border-bottom: 1px solid var(--mk-rule);
+  }
+  .nav-cards > .card-link:last-child {
+    border-bottom: none;
+  }
+  .table-grid {
+    grid-template-columns: 1fr;
+  }
 }

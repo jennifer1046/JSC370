@@ -129,9 +129,9 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#jsc370-2026-final-project" id="toc-jsc370-2026-final-project" class="nav-link active" data-scroll-target="#jsc370-2026-final-project">JSC370 2026 Final Project</a></li>
+  <li><a href="#overview" id="toc-overview" class="nav-link active" data-scroll-target="#overview">Overview</a></li>
   <li><a href="#navigate" id="toc-navigate" class="nav-link" data-scroll-target="#navigate">Navigate</a></li>
-  <li><a href="#headline-findings" id="toc-headline-findings" class="nav-link" data-scroll-target="#headline-findings">Headline findings</a></li>
+  <li><a href="#findings" id="toc-findings" class="nav-link" data-scroll-target="#findings">Findings</a></li>
   <li><a href="#data" id="toc-data" class="nav-link" data-scroll-target="#data">Data</a></li>
   </ul>
 </nav>
@@ -142,7 +142,7 @@ ul.task-list li input[type="checkbox"] {
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Internal Migration in Canada</h1>
-<p class="subtitle lead">Push-Pull Factors and the COVID-19 Structural Shift</p>
+<p class="subtitle lead">Push–Pull Factors and the COVID-19 Structural Shift</p>
 </div>
 
 
@@ -159,41 +159,39 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="jsc370-2026-final-project" class="level2 hero-block">
-<h2 class="anchored" data-anchor-id="jsc370-2026-final-project">JSC370 2026 Final Project</h2>
-<p>Internal migration — residents moving between and within Canadian provinces — reshapes local labour markets, housing demand, and public-service planning more immediately than international immigration, yet gets far less attention. This project asks two questions at the Census Metropolitan Area (CMA) level across 2001–2024:</p>
-<ul>
-<li><strong>Primary (prediction).</strong> How much variance in CMA net interprovincial and intraprovincial migration rate (per 1,000 residents) can push–pull structural factors explain, and which model family generalises best out of time?</li>
-<li><strong>Secondary (inference).</strong> Is the 2020–2024 COVID period associated with a structural shift in migration trend, beyond what push–pull conditions alone predict, and does it differ by CMA size?</li>
-</ul>
+<section id="overview" class="level2">
+<h2 class="anchored" data-anchor-id="overview">Overview</h2>
+<p>Internal migration — residents moving between and within Canadian provinces — reshapes local labour markets, housing demand, and public-service planning more immediately than international immigration, yet receives far less attention. This project studies CMA-level net internal migration from 2001 to 2024 under two distinct research goals.</p>
+<p><span class="lead-label">Primary — Prediction (RQ1, RQ2)</span> How much variance in CMA net interprovincial and intraprovincial migration rate (per 1,000 residents) can push–pull structural factors explain, and which model family generalises best out of time?</p>
+<p><span class="lead-label">Secondary — Inference (RQ3)</span> Is the 2020–2024 COVID period associated with a structural shift in migration trend, beyond what push–pull conditions alone predict, and does that shift differ by CMA size?</p>
 </section>
 <section id="navigate" class="level2">
 <h2 class="anchored" data-anchor-id="navigate">Navigate</h2>
 <div class="nav-cards">
 <a class="card-link" href="final.html">
 <div class="card-title">
-📄 Full written report
+Full Written Report
 </div>
 <div class="card-sub">
-Methods, results, and interpretation — roughly 6–7 pages including tables and figures.
+Methods, results, and interpretation across roughly six to seven pages with tables and figures.
 </div>
 </a> <a class="card-link" href="viz.html">
 <div class="card-title">
-📊 Interactive visualisations
+Interactive Visualisations
 </div>
 <div class="card-sub">
-Three Plotly figures: a CMA bubble map across the full 2001–2024 panel, an interactive per-CMA time series with dropdown and range slider, and a rent-vs-migration bubble scatter with a year animation.
+Three Plotly figures: a CMA bubble map animated across 2001–2024, an interactive per-CMA time series with dropdown and range slider, and a rent-versus-migration bubble scatter with year animation.
 </div>
 </a> <a class="card-link" href="https://github.com/jennifer1046/JSC370/tree/main/JSC370_2026/project/canada_migration" target="_blank" rel="noopener">
 <div class="card-title">
-💻 GitHub repository
+GitHub Repository
 </div>
 <div class="card-sub">
-Reproducible pipeline (<code>migration_analysis.qmd</code>), report source (<code>final.qmd</code>), and every figure/table written to <code>outputs/</code>.
+Reproducible pipeline in <code>migration_analysis.qmd</code>; report source in <code>final.qmd</code>; every figure and table under <code>outputs/</code>.
 </div>
 </a> <a class="card-link" href="about.html">
 <div class="card-title">
-ℹ️ About the project
+About
 </div>
 <div class="card-sub">
 Author, data sources, reproducibility notes, and acknowledgements.
@@ -201,18 +199,26 @@ Author, data sources, reproducibility notes, and acknowledgements.
 </a><p><a class="card-link" href="about.html"></a></p>
 </div>
 </section>
-<section id="headline-findings" class="level2">
-<h2 class="anchored" data-anchor-id="headline-findings">Headline findings</h2>
+<section id="findings" class="level2">
+<h2 class="anchored" data-anchor-id="findings">Findings</h2>
+<section id="prediction" class="level4">
+<h4 class="anchored" data-anchor-id="prediction">Prediction</h4>
 <ol type="1">
-<li><strong>Tree models substantially outperform linear models</strong> for both outcomes. Random Forest reaches holdout R² ≈ 0.42 for intraprovincial rate and ≈ 0.30 for interprovincial rate; OLS gets 0.22 and 0.03 respectively.</li>
-<li><strong>Intraprovincial migration is more predictable</strong> than interprovincial. Within-province flows track housing affordability and demographic structure cleanly; cross-provincial flows depend on shock-driven opportunities that structural features approximate less well.</li>
-<li><strong>The COVID structural shift is detectable but non-linear.</strong> The interprovincial year-trend drops significantly for large CMAs post-2020 (HC3 p = 0.04); the intraprovincial linear interaction is not significant (p = 0.14), but the GAM smooth shows a clear 2020–2022 dip and partial 2023 rebound.</li>
-<li><strong>International in-migration negatively predicts intraprovincial net flows</strong> (HC3 p &lt; 10⁻¹⁸): CMAs receiving more international migrants tend to lose residents to other CMAs in the same province, consistent with a displacement mechanism.</li>
+<li>Tree models substantially outperform linear models for both migration types. Random Forest reaches holdout R² of 0.42 for intraprovincial rate and 0.30 for interprovincial rate; OLS reaches 0.22 and 0.03 respectively — an order-of-magnitude improvement for the interprovincial model and a meaningful gain for the intraprovincial model.</li>
+<li>Intraprovincial migration is substantially more predictable than interprovincial migration. Within-province flows track housing affordability and demographic age structure cleanly; cross-provincial flows depend more on shock-driven opportunities (resource booms, pandemic-era relocation) that structural features approximate less well.</li>
 </ol>
+</section>
+<section id="inference" class="level4">
+<h4 class="anchored" data-anchor-id="inference">Inference</h4>
+<ol start="3" type="1">
+<li>The COVID structural shift is statistically detectable for interprovincial migration — the year-trend coefficient for large CMAs drops by 0.72 per 1,000 per year post-2020 (HC3 p = 0.04). On the intraprovincial side the linear interaction does not reach significance (p = 0.14), but the GAM partial-effect plot shows a pronounced 2020–2022 dip and partial 2023 rebound that a linear specification cannot capture.</li>
+<li>International in-migration is a strongly negative predictor of intraprovincial net flows (HC3 p &lt; 10⁻¹⁸): CMAs receiving more international migrants tend to lose residents to other CMAs in the same province, consistent with a displacement mechanism that warrants follow-up work.</li>
+</ol>
+</section>
 </section>
 <section id="data" class="level2">
 <h2 class="anchored" data-anchor-id="data">Data</h2>
-<p>All five source tables are from Statistics Canada, pulled programmatically via the bulk CSV endpoint (no API key required):</p>
+<p>Five Statistics Canada tables, all accessed via the public bulk CSV endpoint (no API key required):</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 33%">
@@ -254,7 +260,7 @@ Author, data sources, reproducibility notes, and acknowledgements.
 </tr>
 </tbody>
 </table>
-<p>After cleaning, the merged panel is <strong>40 CMAs × 24 years = 960 observations</strong>.</p>
+<p>After cleaning and merging, the panel contains 40 CMAs × 24 years = <strong>960 CMA-year observations</strong>.</p>
 
 
 </section>
