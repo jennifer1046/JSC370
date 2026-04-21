@@ -76,13 +76,6 @@ cd ..
 cd site && quarto publish gh-pages
 ```
 
-## Related files
-
-- **Tasks and phase plan:** [`JSC370_2026/project/canada_migration/tasks/todo.md`](JSC370_2026/project/canada_migration/tasks/todo.md)
-- **Lessons log:** [`JSC370_2026/project/canada_migration/tasks/lessons.md`](JSC370_2026/project/canada_migration/tasks/lessons.md)
-- **Bug log:** [`JSC370_2026/project/canada_migration/docs/bugs-and-fixes.md`](JSC370_2026/project/canada_migration/docs/bugs-and-fixes.md)
-- **Assignment briefs:** `JSC370_2026/docs/hw5-2026.pdf`, `JSC370_2026/docs/final-2026.pdf`
-
 ## License
 
 Coursework submission — not released under an open-source license.

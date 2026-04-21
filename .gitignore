@@ -215,3 +215,9 @@ JSC370_2026/project/canada_migration/data/raw/*.csv
 .env
 JSC370_2026/labs/
 JSC370_2026/homework/
+
+# Agent-workflow artefacts — kept locally, not tracked.
+.claude/
+/CLAUDE.md
+JSC370_2026/project/canada_migration/tasks/
+JSC370_2026/project/canada_migration/docs/
