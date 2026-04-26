@@ -3,6 +3,12 @@ title: "Internal Migration in Canada"
 subtitle: "Push and Pull Factors, Lag Effects, and Covid-19 Structural Shift"
 ---
 
+## Author
+
+**Yibing Xia** — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: <https://github.com/jennifer1046/JSC370>.
+
+This project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project's scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill.
+
 ## Overview
 
 Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.
@@ -40,12 +46,6 @@ Five Statistics Canada tables, all accessed via the public bulk CSV endpoint (no
 | 27-10-0273-02 | R&D expenditures by performing sector | Province |
 
 After cleaning and merging, the panel contains 40 CMAs × 24 years = **960 CMA-year observations**.
-
-## Author
-
-**Yibing Xia** — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: <https://github.com/jennifer1046/JSC370>.
-
-This project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project’s scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill. 
 
 ## References
 
