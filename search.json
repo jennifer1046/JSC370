@@ -1,59 +1,52 @@
 [
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Internal Migration in Canada",
     "section": "",
-    "text": "Yibing Xia — University of Toronto · JSC370 (Data Science II) · 2026."
+    "text": "Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.\nThis project studies CMA-level net internal migration rates from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in net interprovincial and intraprovincial migration rates can be predicted by push–pull structural factors, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration, and does that shift differ by CMA size?"
   },
   {
-    "objectID": "about.html#author",
-    "href": "about.html#author",
-    "title": "About",
+    "objectID": "index.html#overview",
+    "href": "index.html#overview",
+    "title": "Internal Migration in Canada",
     "section": "",
-    "text": "Yibing Xia — University of Toronto · JSC370 (Data Science II) · 2026."
+    "text": "Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.\nThis project studies CMA-level net internal migration rates from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in net interprovincial and intraprovincial migration rates can be predicted by push–pull structural factors, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration, and does that shift differ by CMA size?"
   },
   {
-    "objectID": "about.html#course-context",
-    "href": "about.html#course-context",
-    "title": "About",
-    "section": "Course context",
-    "text": "Course context\nJSC370 is a project-based data science course at UofT; this final project is the capstone deliverable. It builds on a midterm submission that scoped the same dataset with linear-model baselines on raw count outcomes; the final project adds a per-capita rate target, tree-based models, lag features, and a COVID-period inferential specification with an explicit year-by-post-2020 interaction."
+    "objectID": "index.html#navigate",
+    "href": "index.html#navigate",
+    "title": "Internal Migration in Canada",
+    "section": "Navigate",
+    "text": "Navigate\n\n\n\nFull Written Report\n\n\nFull analysis: methods, results, interpretation of key findings, and limitations.\n\n \n\nInteractive Visualisations\n\n\nThree Plotly figures: a CMA map animated across 2001–2024, an interactive per-CMA time series with dropdown and range slider, and a rent-versus-migration bubble scatter plot with animation across years.\n\n \n\nGitHub Repository\n\n\nReproducible pipeline in migration_analysis.qmd; report source in final.qmd; every figure and table under outputs/."
   },
   {
-    "objectID": "about.html#data-sources",
-    "href": "about.html#data-sources",
-    "title": "About",
-    "section": "Data sources",
-    "text": "Data sources\nFive tables, all from Statistics Canada’s bulk CSV API (no API key required):\n\n17-10-0149-01 — Components of population change by CMA, 2021 boundaries — provides the two outcomes (net_interprovincial, net_intraprovincial) plus intl_inmigration and natural_increase_rate.\n17-10-0148-01 — Population estimates, July 1, by CMA — total population and age-share breakdown (share_25_44, share_65plus).\n34-10-0133-01 — CMHC average rents for areas with population ≥ 10,000 — avg_rent and derived rent_deviation.\n14-10-0020-01 — Unemployment, participation, and employment rate by educational attainment — provincial unemployment_rate and participation_rate.\n27-10-0273-02 — Expenditures on research and development by performing sector — provincial rd_provincial.\n\nNo API key or authentication is required for any of these tables; the pipeline downloads the bulk-CSV ZIP for each table and caches it locally under data/raw/ (gitignored). Re-running the pipeline reuses the cache."
+    "objectID": "index.html#findings",
+    "href": "index.html#findings",
+    "title": "Internal Migration in Canada",
+    "section": "Findings",
+    "text": "Findings\nPrediction. Push and pull factors explain more variance in CMA-level intraprovincial migration rate (Random Forest holdout R² = 0.42) than interprovincial rate (Random Forest holdout R² = 0.30). The best models are tree-based, beating linear baselines by approximately 0.20 in holdout R² for both outcomes. The dominant predictors differ by outcome: rd_provincial and share_65plus rank highest for interprovincial rates, while intl_inmigration and log_population lead for intraprovincial rates. Interprovincial flows are labour and opportunity driven, while intraprovincial flows are housing and demographic driven.\nInference. On the interprovincial side, a significant post-2020 structural shift is detected for large CMAs (coefficient −0.72, p = 0.04). On the intraprovincial side the linear interaction is not statistically significant (p = 0.14), but the GAM partial dependency plot shows a clear non-linear 2020–2022 spike. Baseline intraprovincial gains for medium (+2.60) and small (+2.83) CMAs over large CMAs are robust and large relative to any estimated COVID shift, suggesting the suburban growth pattern overshadows the pandemic shock."
   },
   {
-    "objectID": "about.html#reproducibility",
-    "href": "about.html#reproducibility",
-    "title": "About",
-    "section": "Reproducibility",
-    "text": "Reproducibility\nThe entire analysis is reproducible from a clean clone by rendering two notebooks:\n# From the project directory\ncd JSC370_2026/project/canada_migration\n\n# 1. Rebuild outputs/tables/* and outputs/figures/*\nquarto render migration_analysis.qmd\n\n# 2. Rebuild the written report as HTML\nquarto render final.qmd\n\n# 3. Build this website (outputs to site/_site/)\ncd site && quarto render\nThe first render pulls ~2.3 GB of StatCan data on first run (components of population change is a large file); subsequent renders read from data/raw/ in seconds. Processed data (data/processed/panel_cma.csv, train.csv, test.csv) and every figure/table are regenerated deterministically."
+    "objectID": "index.html#data",
+    "href": "index.html#data",
+    "title": "Internal Migration in Canada",
+    "section": "Data",
+    "text": "Data\nFive Statistics Canada tables, all accessed via the public bulk CSV endpoint (no API key required):\n\n\n\n\n\n\n\n\nTable\nContent\nGeography\n\n\n\n\n17-10-0149-01\nComponents of population change (net migration outcomes)\nCMA\n\n\n17-10-0148-01\nPopulation estimates (age structure)\nCMA\n\n\n34-10-0133-01\nCMHC average rents\nCMA\n\n\n14-10-0020-01\nUnemployment and participation rate\nProvince\n\n\n27-10-0273-02\nR&D expenditures by performing sector\nProvince\n\n\n\nAfter cleaning and merging, the panel contains 40 CMAs × 24 years = 960 CMA-year observations."
   },
   {
-    "objectID": "about.html#citations",
-    "href": "about.html#citations",
-    "title": "About",
-    "section": "Citations",
-    "text": "Citations\n\nChastko, K. (2021). Report on the Demographic Situation in Canada — Internal Migration 2016/17 to 2018/19. Statistics Canada Catalogue 91-209-X.\nMcQuillan, K. (2024). Leaving the big city: New patterns of migration in Canada. The School of Public Policy Publications, 17(1).\nSong, G., Charbonneau, P., Chastko, K., & Grueva, S. (2026). Why do people move within Canada? A study on the reasons for internal migration and mobility using the Canadian Housing Survey. Statistics Canada Catalogue 91F0015M."
+    "objectID": "index.html#author",
+    "href": "index.html#author",
+    "title": "Internal Migration in Canada",
+    "section": "Author",
+    "text": "Author\nYibing Xia — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: https://github.com/jennifer1046/JSC370.\nThis project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project’s scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill."
   },
   {
-    "objectID": "about.html#acknowledgements",
-    "href": "about.html#acknowledgements",
-    "title": "About",
-    "section": "Acknowledgements",
-    "text": "Acknowledgements\nInstructor and TA feedback on the midterm directly shaped the final scope: the primary-vs-secondary goal split, the rate target switch, the explicit random-split rejection as leakage, and the year:post_covid interaction for the inferential specification."
-  },
-  {
-    "objectID": "about.html#colophon",
-    "href": "about.html#colophon",
-    "title": "About",
-    "section": "Colophon",
-    "text": "Colophon\n\nPython 3.11, pandas, numpy, scikit-learn, xgboost, pygam, statsmodels, plotnine (static figures), plotly (interactive figures).\nQuarto for rendering; cosmo theme.\nSource code and data: https://github.com/jennifer1046/JSC370."
+    "objectID": "index.html#references",
+    "href": "index.html#references",
+    "title": "Internal Migration in Canada",
+    "section": "References",
+    "text": "References\n\nChastko, K. (2021, July 14). Report on the demographic situation in Canada internal migration: Overview, 2016/2017 to 2018/2019. Statistics Canada. https://www150.statcan.gc.ca/n1/pub/91-209-x/2021001/article/00001-eng.htm\nMcQuillan, K. (2024). Leaving the big city: New patterns of migration in Canada. The School of Public Policy Publications, 17(1). https://doi.org/10.55016/ojs/sppp.v17i1.78322\nSong, G., Charbonneau, P., Chastko, K., & Grueva, S. (2026, February 16). Why do people move within Canada? A study on the reasons for internal migration and mobility using the Canadian Housing Survey. Statistics Canada. https://www150.statcan.gc.ca/n1/pub/91f0015m/91f0015m2026001-eng.htm\nStatistics Canada. Table 17-10-0149-01 — Components of population change by census metropolitan area and census agglomeration, 2021 boundaries.\nStatistics Canada. Table 17-10-0148-01 — Population estimates, July 1, by census metropolitan area and census agglomeration, 2021 boundaries.\nStatistics Canada. Table 34-10-0133-01 — Canada Mortgage and Housing Corporation, average rents for areas with a population of 10,000 and over.\nStatistics Canada. Table 14-10-0020-01 — Unemployment rate, participation rate and employment rate by educational attainment, annual.\nStatistics Canada. Table 27-10-0273-02 — Expenditures on research and development (R&D) by performing sector."
   },
   {
     "objectID": "viz.html",
@@ -82,40 +75,5 @@
     "title": "Interactive Visualisations",
     "section": "Figure 3 — Rent deviation vs. intraprovincial rate, animated by year",
     "text": "Figure 3 — Rent deviation vs. intraprovincial rate, animated by year\nEach bubble is one CMA in one year: x-axis is the CMA’s average rent minus the provincial median rent for that year (positive = more expensive than the provincial average), y-axis is net intraprovincial migration rate per 1,000, bubble size is population, and colour groups CMAs into Large/Medium/Small by pre-COVID population tertile. The year slider animates the annual scatter.\n\n\n                            \n                                            \n\n\n\nFigure 3. Rent deviation (CMA average rent minus provincial median) vs. net intraprovincial migration rate, bubble size = population, colour = pre-COVID CMA size tertile, animated across 2001–2024.\n\n\nThe within-year cross-section consistently shows large red (Large) bubbles clustered on the upper-right early in the panel (high rent, mild positive intraprov rate) and sliding into the lower-right in 2020–2022 (high rent, strongly negative intraprov rate) — the big-metro COVID out-migration signature. Mid-size blue/green bubbles stay above zero for most of the panel and swing further positive in the COVID window, corroborating the push–pull direction: when big-metro rents stay elevated while remote work becomes feasible, residents flow to mid-size CMAs with less rent pressure. The animation makes this geographic rebalancing visible year by year in a way that a static scatter cannot."
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Internal Migration in Canada",
-    "section": "",
-    "text": "Internal migration — residents moving between and within Canadian provinces — reshapes local labour markets, housing demand, and public-service planning more immediately than international immigration, yet receives far less attention. This project studies CMA-level net internal migration from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in CMA net interprovincial and intraprovincial migration rate (per 1,000 residents) can push–pull structural factors explain, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration trend, beyond what push–pull conditions alone predict, and does that shift differ by CMA size?"
-  },
-  {
-    "objectID": "index.html#overview",
-    "href": "index.html#overview",
-    "title": "Internal Migration in Canada",
-    "section": "",
-    "text": "Internal migration — residents moving between and within Canadian provinces — reshapes local labour markets, housing demand, and public-service planning more immediately than international immigration, yet receives far less attention. This project studies CMA-level net internal migration from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in CMA net interprovincial and intraprovincial migration rate (per 1,000 residents) can push–pull structural factors explain, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration trend, beyond what push–pull conditions alone predict, and does that shift differ by CMA size?"
-  },
-  {
-    "objectID": "index.html#navigate",
-    "href": "index.html#navigate",
-    "title": "Internal Migration in Canada",
-    "section": "Navigate",
-    "text": "Navigate\n\n\n\nFull Written Report\n\n\nMethods, results, and interpretation across roughly six to seven pages with tables and figures.\n\n \n\nInteractive Visualisations\n\n\nThree Plotly figures: a CMA bubble map animated across 2001–2024, an interactive per-CMA time series with dropdown and range slider, and a rent-versus-migration bubble scatter with year animation.\n\n \n\nGitHub Repository\n\n\nReproducible pipeline in migration_analysis.qmd; report source in final.qmd; every figure and table under outputs/.\n\n \n\nAbout\n\n\nAuthor, data sources, reproducibility notes, and acknowledgements."
-  },
-  {
-    "objectID": "index.html#findings",
-    "href": "index.html#findings",
-    "title": "Internal Migration in Canada",
-    "section": "Findings",
-    "text": "Findings\n\nPrediction\n\nTree models substantially outperform linear models for both migration types. Random Forest reaches holdout R² of 0.42 for intraprovincial rate and 0.30 for interprovincial rate; OLS reaches 0.22 and 0.03 respectively — an order-of-magnitude improvement for the interprovincial model and a meaningful gain for the intraprovincial model.\nIntraprovincial migration is substantially more predictable than interprovincial migration. Within-province flows track housing affordability and demographic age structure cleanly; cross-provincial flows depend more on shock-driven opportunities (resource booms, pandemic-era relocation) that structural features approximate less well.\n\n\n\nInference\n\nThe COVID structural shift is statistically detectable for interprovincial migration — the year-trend coefficient for large CMAs drops by 0.72 per 1,000 per year post-2020 (HC3 p = 0.04). On the intraprovincial side the linear interaction does not reach significance (p = 0.14), but the GAM partial-effect plot shows a pronounced 2020–2022 dip and partial 2023 rebound that a linear specification cannot capture.\nInternational in-migration is a strongly negative predictor of intraprovincial net flows (HC3 p &lt; 10⁻¹⁸): CMAs receiving more international migrants tend to lose residents to other CMAs in the same province, consistent with a displacement mechanism that warrants follow-up work."
-  },
-  {
-    "objectID": "index.html#data",
-    "href": "index.html#data",
-    "title": "Internal Migration in Canada",
-    "section": "Data",
-    "text": "Data\nFive Statistics Canada tables, all accessed via the public bulk CSV endpoint (no API key required):\n\n\n\n\n\n\n\n\nTable\nContent\nGeography\n\n\n\n\n17-10-0149-01\nComponents of population change (net migration outcomes)\nCMA\n\n\n17-10-0148-01\nPopulation estimates (age structure)\nCMA\n\n\n34-10-0133-01\nCMHC average rents\nCMA\n\n\n14-10-0020-01\nUnemployment and participation rate\nProvince\n\n\n27-10-0273-02\nR&D expenditures by performing sector\nProvince\n\n\n\nAfter cleaning and merging, the panel contains 40 CMAs × 24 years = 960 CMA-year observations."
   }
 ]
