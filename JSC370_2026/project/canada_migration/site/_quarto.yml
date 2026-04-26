@@ -11,11 +11,11 @@ website:
         href: index.qmd
       - text: Interactive Plots
         href: viz.qmd
-      - text: About
-        href: about.qmd
     right:
       - text: "Full Report"
         href: final.html
+      - text: "Download PDF"
+        href: https://github.com/jennifer1046/JSC370/blob/main/JSC370_2026/project/canada_migration/final.pdf
       - icon: github
         href: https://github.com/jennifer1046/JSC370
         aria-label: GitHub repository

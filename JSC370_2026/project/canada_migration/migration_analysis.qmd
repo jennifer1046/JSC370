@@ -361,9 +361,9 @@ g_ts = (
     + p9.geom_point(size=1.7)
     + p9.geom_vline(xintercept=[2020, 2021], linetype="dashed", color="gray")
     + p9.labs(
-        title="National Aggregate Net Inter/Intra-provincial Migration\n(sum across CMAs)",
+        title="National Aggregate Net Inter/Intra-provincial Migration\n(sum across CMAs, number of persons)",
         x="Year",
-        y="Net migration",
+        y="Net migration (persons)",
         color="Component",
     )
     + p9.theme_minimal()
@@ -385,8 +385,8 @@ g_dist = (
     + p9.geom_histogram(bins=40, fill="#2F7FB8", color="white", alpha=0.85)
     + p9.facet_wrap("~component_clean", ncol=2, scales="free_y")
     + p9.labs(
-        title="Distribution of Net Inter/Intra-provincial Migration Across CMA-years",
-        x="Net migration (1st-99th pct)",
+        title="Distribution of Net Inter/Intra-provincial Migration Across CMA-years (persons)",
+        x="Net migration in persons (1st–99th percentile)",
         y="Count of CMA-year observations",
     )
     + p9.theme_minimal()
@@ -824,7 +824,6 @@ pop_total, _ = filter_to_analysis_window(pop_total, "year")
 pop_total = pop_total.dropna(subset=["geo_key", "year", "VALUE"])
 pop_for_spine = pop_total.copy()
 
-# Task 1 - drop split geographies before building the spine.
 drop_split_mask = pop_for_spine["geo_key"].str.contains(r" part,| part$", regex=True, na=False) & ~pop_for_spine["geo_key"].eq("ottawa-gatineau, ontario part, ontario")
 print(f"Split-geography rows removed before spine build: {int(drop_split_mask.sum()):,}")
 pop_for_spine = pop_for_spine.loc[~drop_split_mask].copy()
@@ -1059,7 +1058,6 @@ print(f"STEP 3 MERGE COMPLETE — panel shape: {rows} × {cols}")
 # Check the merged panel for missingness, apply the agreed fixes, and save the train/test split
 TRAIN_END_YEAR = 2018
 
-# Task 2 - rerun diagnose_nan after the spine fix.
 avg_rent_source = rent_panel.copy()
 age_feature_source = age_panel.copy()
 
@@ -1090,7 +1088,7 @@ def diagnose_nan(panel, col, source_df, source_geo_col, year_col='year'):
         "cause_b_keys": cause_b_keys,
     }
 
-print("\nTask 2 — diagnose_nan after spine fix")
+print("\nNaN diagnosis after spine fix")
 diag_specs = {
     "avg_rent": avg_rent_source,
     "share_25_44": age_feature_source,
@@ -1111,7 +1109,7 @@ diag_results_df[["col", "total_nan", "cause_a", "cause_b", "cause_c"]].to_csv(
     PROJECT_ROOT / "outputs" / "tables" / "3_nan_diagnosis.csv", index=False
 )
 
-print("\nTask 2a1 — manual CMA drop for persistent rent Cause-B mismatches")
+print("\nManual CMA drop for persistent rent Cause-B mismatches")
 MANUAL_DROP_CMA_KEYS = [
     "belleville-quinte west, ontario",
     "ottawa-gatineau, ontario part, ontario",
@@ -1120,7 +1118,7 @@ manual_drop_cma_names = sorted(panel.loc[panel["geo_key"].isin(MANUAL_DROP_CMA_K
 panel = panel[~panel["geo_key"].isin(MANUAL_DROP_CMA_KEYS)].copy()
 print(f"Dropped manual rent-mismatch CMAs: {manual_drop_cma_names}")
 
-print("\nTask 2a2 — targeted imputation for Chilliwack 2006 avg_rent")
+print("\nTargeted imputation for Chilliwack 2006 avg_rent")
 chilli_key = "chilliwack, british columbia"
 chilli_year = 2006
 chilli_mask = (panel["geo_key"] == chilli_key) & (panel["year"] == chilli_year)
@@ -1144,7 +1142,7 @@ panel["rent_deviation"] = panel["avg_rent"] - panel.groupby(["province", "year"]
 remaining_train_rent_nan = int(panel.loc[panel["year"] <= TRAIN_END_YEAR, "avg_rent"].isna().sum())
 print(f"Remaining train-set avg_rent NaN after manual fixes: {remaining_train_rent_nan}")
 
-print("\nTask 2b — apply 30% missingness threshold")
+print("\nApply 30% missingness threshold")
 identifier_cols = ["geo_key", "geo_name", "geo_type", "year", "province"]
 outcome_cols = ["net_interprovincial", "net_intraprovincial"]
 derived_cols = ["rent_deviation", "log_population"]
@@ -1179,25 +1177,23 @@ if dropped_cma_names:
 else:
     print("Dropped CMAs (manual review required): none")
 
-# Task 3 - add log transform while retaining raw population.
 panel["log_population"] = np.where(panel["population"] > 0, np.log(panel["population"]), np.nan)
-print("\nTask 3 — added log_population while retaining population")
+print("\nAdded log_population while retaining population")
 
 # Save filtered panel
 panel_out = PROJECT_ROOT / "data" / "processed" / "panel_cma.csv"
 panel.to_csv(panel_out, index=False)
 print(f"Saved filtered panel to: {panel_out}")
 
-# Task 4 - train/test split + overwrite processed outputs.
 train = panel[panel['year'] <= TRAIN_END_YEAR].copy()
 test = panel[panel['year'] >= (TRAIN_END_YEAR + 1)].copy()
 
-print("\nTask 4 — train-set NULL counts (year <= 2018)")
+print("\nTrain-set NULL counts (year <= 2018)")
 train_null_counts = train.isna().sum().sort_values(ascending=False)
 print(train_null_counts.to_string())
 print(f"Remaining train-set NaN cells: {int(train.isna().sum().sum()):,}")
 
-print("\nTask 4 — train/test split and save")
+print("\nTrain/test split and save")
 print(f"train shape: {train.shape}")
 print(f"test shape:  {test.shape}")
 
@@ -1283,10 +1279,10 @@ def summarize_frame(df: pd.DataFrame) -> pd.DataFrame:
         df[summary_cols]
         .agg(["mean", "std", "min", "max"])
         .T.reset_index()
-        .rename(columns={"index": "feature", "std": "sd"})
+        .rename(columns={"index": "variable", "std": "sd"})
     )
     out["pct_missing"] = (df[summary_cols].isna().mean().values * 100).round(2)
-    return out[["feature", "mean", "sd", "min", "max", "pct_missing"]]
+    return out[["variable", "mean", "sd", "min", "max", "pct_missing"]]
 
 summary_train_df = summarize_frame(eda)
 summary_test_df = summarize_frame(test_eda)
@@ -1407,7 +1403,7 @@ g_4d = (
         "Transition\n(2019)": "#F28E2B",
         "COVID/Post\n(2020-2024)": "#E15759",
     })
-    + p9.labs(title="Distribution Shift by Period, Faceted by CMA Size", x="", y="Migration rate (per 1,000)")
+    + p9.labs(title="Distribution Shift in Migration Rate (per 1,000) by Period, Faceted by CMA Size", x="", y="Migration rate (per 1,000)")
     + p9.theme_minimal(base_size=14)
     + p9.theme(
         figure_size=(16, 10),
@@ -1631,7 +1627,7 @@ def build_pipeline(feats, model):
     # Clone the model so each returned pipeline owns an independent estimator.
     # Without this, the shared instance from `candidate_models` is mutated in
     # place by the untuned OLS fit, and fitted_models retrievals later see the
-    # latest fit, not theirs (see docs/bugs-and-fixes.md #1).
+    # latest fit, not theirs.
     num_feats = [f for f in feats if f != "cma_size"]
     cat_feats = [f for f in feats if f == "cma_size"]
     preprocessor = ColumnTransformer(
@@ -1817,7 +1813,7 @@ for outcome, feats in outcome_specs:
         "r2_test": r2_test,
         "rmse_test": rmse_test,
     })
-    # Store preprocessor + fitted GAM together so Phase 3/4 can reuse them.
+    # Store preprocessor + fitted GAM together so downstream steps can reuse them.
     fitted_models[(outcome, "GAM")] = {"preprocessor": pre, "gam": final_gam, "n_num": n_num}
 ```
 
@@ -2057,14 +2053,10 @@ lag_specs = {
     "lag1_lag2":       [f"{f}_lag{lg}" for f in LAG_FEATURES for lg in (1, 2)],
 }
 lag_model_ctors = {
-    "OLS": LinearRegression,
-    # XGBoost n_jobs=-1 is safe (OpenMP threads, shared memory).
-    "XGBoost": lambda: XGBRegressor(
-        random_state=RNG, n_jobs=-1, tree_method="hist",
-        objective="reg:squarederror", verbosity=0,
-        n_estimators=500, max_depth=5, learning_rate=0.05,
-        subsample=0.8, colsample_bytree=0.8,
-    ),
+    "OLS": lambda outcome: LinearRegression(),
+    # Extract the bare RF from the Step 5 fitted Pipeline before cloning — build_pipeline
+    # adds its own preprocessor, so passing the full pipeline would double-wrap it.
+    "RF":  lambda outcome: clone(fitted_models[(outcome, "RandomForest")].named_steps["model"]),
 }
 
 lag_rows = []
@@ -2072,7 +2064,7 @@ for outcome, feats in outcome_specs:
     for spec_name, extra_feats in lag_specs.items():
         feats_with_lag = feats + extra_feats
         for model_name, ctor in lag_model_ctors.items():
-            res = score_lag_spec(outcome, feats_with_lag, train_lag, test_lag, ctor)
+            res = score_lag_spec(outcome, feats_with_lag, train_lag, test_lag, lambda: ctor(outcome))
             res.update({
                 "outcome": outcome, "model": model_name, "spec": spec_name,
                 "n_features": len(feats_with_lag),

@@ -40,7 +40,7 @@ Regulations and stories about immigration have pervaded Canadian news in recent 
 
 The article by Song et al. (2026) explains the motivation for the movement within and across provinces, citing housing conditions and employment opportunities as the top reasons. These results are based on the Canadian Housing Survey conducted in 2022. 
 
-A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.
+A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an aging population. A pull factor is a condition that attracts residents, like employment opportunity and affordability.
 
 ### Project Goals
 
@@ -218,7 +218,7 @@ $$
 \end{aligned}
 $$
 
-where $D_t = 1$ for years $\geq 2020$, $s$ indexes CMA size, and the abbreviated predictors are rent deviation, unemployment rate, share 65+, and international in-migration respectively. The interprovincial model additionally includes provincial R&D spending. The interaction $\text{year} \times D_t$ tests whether the migration trend changed post-2020; $D_t \times s$ tests whether the shift magnitude differs by CMA size. A LinearGAM with a smooth year term `s(year)` and linear push–pull factors is fit as a non-linear complement.
+where $D_t = 1$ for years $\geq 2020$, $s$ indexes CMA size, and the abbreviated predictors are rent deviation, unemployment rate, share 65+, and international in-migration respectively. The interprovincial model additionally includes provincial R&D spending. The interaction $\text{year} \times D_t$ tests whether the migration trend changed post-2020; $D_t \times s$ tests whether the shift magnitude differs by CMA size. A LinearGAM with a smooth year term `s(year)` and linear push–pull factors is fit as a nonlinear complement.
 
 ### Software
 
@@ -238,7 +238,7 @@ Figure 1 plots national aggregate net migration across all CMAs from 2001 to 202
 Aggregate migration counts (left) and their cross-sectional distributions (right).
 :::
 
-The two outcomes tell different stories. Intraprovincial migration counts were steady until 2015, then began declining, suggesting the exodus from large CMAs predates Covid. It hit the minimum in 2021 and partially recovered, but remained negative through 2024. Interprovincial migration was stable until 2020, then turned negative during the pandemic. The distributions of both outcomes are approximately symmetric with most CMA-years near zero; the OLS may be pulled toward rare extreme observations.
+The two outcomes tell different stories. Intraprovincial migration counts were steady until 2015, then began declining, suggesting the exodus from large CMAs predates Covid. It hit the minimum in 2021 and partially recovered, but remained negative through 2024. Interprovincial migration was stable until 2020, then turned negative during the pandemic. The distributions of both outcomes are approximately symmetric with most CMA-years near zero. The OLS may be pulled toward rare extreme observations, which motivates using more capable models.
 
 Most provinces show similar trends in unemployment rates within the study period, with a spike in 2020. But the actual values are different across provinces. Newfoundland and Labrador has the highest unemployment rates in all years, which justifies using unemployment rate as a feature.
 
@@ -260,8 +260,8 @@ train_df = pd.read_csv(TABLES_DIR / "4a_train_summary_stats.csv")
 test_df  = pd.read_csv(TABLES_DIR / "4a_test_summary_stats.csv")
 if IS_PDF:
     _s_fmt = {"mean": "{:,.3f}", "sd": "{:,.3f}"}
-    _t1 = train_df[["feature", "mean", "sd"]]
-    _t2 = test_df[["feature", "mean", "sd"]]
+    _t1 = train_df[["variable", "mean", "sd"]]
+    _t2 = test_df[["variable", "mean", "sd"]]
     _lt1 = latex_table(_t1, _s_fmt)
     _lt2 = latex_table(_t2, _s_fmt)
     _note = (
@@ -302,7 +302,7 @@ else:
 Period distribution shift by CMA size (left) and feature correlation heatmap on the training set (right).
 :::
 
-Mean `avg_rent` increased sharply between the training and the test window (from about $760 to $1,170), as did mean international in-migration per CMA-year (from about 6,000 to 9,000), reflecting the distributional shift visible in Figure 2 (a). The distribution of net migration rate shifted across three periods: pre-Covid (2001–2018), transition (2019), and Covid/post-Covid (2020–2024). Large CMAs experienced increasing polarization in intraprovincial migration rates during the post-Covid period, supporting the inclusion of CMA size as a feature. The correlation heatmap shows that net interprovincial migration rate has a Spearman correlation of −0.30 with unemployment rate, consistent with findings from the Canadian Housing Survey. These distributional shifts and correlations motivate RQ3, where we test whether the post-2020 period represents a structural break beyond what the features alone predict.
+Mean `avg_rent` increased sharply between the training and the test window (from about $760 to $1,170), as did mean international in-migration per CMA-year (from about 6,000 to 9,000). The distribution of net migration rate shifted across three periods: pre-Covid (2001–2018), transition (2019), and Covid/post-Covid (2020–2024). Large CMAs experienced increasing polarization in intraprovincial migration rates during the post-Covid period, while small and medium CMAs had relatively stable migration patterns, supporting the inclusion of CMA size as a feature. The correlation heatmap shows that net interprovincial migration rate has a correlation of −0.30 with unemployment rate, consistent with findings from the Canadian Housing Survey. These distributional shifts provide a challenge for out of time prediction but also motivate RQ3, where we investigate whether Covid-19 induced a structural shift after controlling for the ordinary push and pull factors.
 
 #### Model comparison
 
@@ -365,7 +365,7 @@ else:
     print(html_table(lag_df, lag_fmt, group_col="outcome"))
 ```
 
-For both outcomes, adding lag features reduces Random Forest holdout R². Interprovincial model performance drops from 0.30 (contemporaneous) to 0.27 with lag-1 or lag-1+lag-2; intraprovincial drops from 0.42 to 0.40 and 0.39 respectively. The contemporaneous specification is preferred for both. Interestingly, CV R² for the interprovincial model does improve with features lagged by one year (0.275 → 0.337), but this gain does not transfer to the 2019–2024 holdout set, suggesting the lag features overfit within the training window. OLS is indifferent to lag features. Thus, H2 is not supported: lag structure does not improve prediction for either outcome.
+For both outcomes, adding lag features reduces Random Forest holdout R². Interprovincial model performance drops from 0.30 (contemporaneous) to 0.27 with lag-1 or lag-1+lag-2; intraprovincial drops from 0.42 to 0.40 and 0.39 respectively. The contemporaneous specification is preferred for both. Interestingly, CV R² for the interprovincial model does improve with features lagged by one year (0.275 → 0.337), but this gain does not transfer to the 2019–2024 holdout set, suggesting the lag features overfit within the training window. OLS is indifferent to lag features. Thus, H2 is not supported: lag features do not improve prediction for either outcome.
 
 <!-- #### Heteroscedasticity robustness
 
@@ -435,11 +435,11 @@ Interpretation:
 GAM year smooth for net interprovincial rate (left) and net intraprovincial rate (right).
 :::
 
-## Conclusions
+## Conclusion
 
 **Primary finding (prediction).** Push and pull factors explain more variance in CMA-level intraprovincial migration rate (Random Forest holdout R² = 0.42) than interprovincial rate (Random Forest holdout R² = 0.30). The best models are tree-based, beating linear baselines by approximately 0.20 in holdout R² for both migration outcomes, suggesting nonlinearity and feature interactions exist and are meaningful. Lag features do not improve Random Forest holdout performance for either outcome; the contemporaneous specification is preferred for both. The dominant predictors differ by outcome: `rd_provincial` and `share_65plus` rank highest for interprovincial rates, while `intl_inmigration` and `log_population` lead for intraprovincial rates, with `rent_deviation` contributing meaningfully to both. This replicates the Song et al. (2026) finding in aggregate administrative data: interprovincial flows are labour and opportunity driven, while intraprovincial flows are housing and demographic driven, supporting H1.
 
-**Secondary finding (inference).** On the interprovincial side, a significant post-2020 structural shift is detected for large CMAs (coefficient $-0.72$, $p = 0.04$). On the intraprovincial side the linear interaction is not statistically significant ($p = 0.14$), but the GAM partial dependency plot for the year effect shows a clear non-linear 2020–2022 spike. Baseline intraprovincial gains for medium (+2.60) and small (+2.83) CMAs over large CMAs are robust and large relative to any estimated Covid shift, suggesting the suburban growth pattern overshadows the pandemic shock. H3 is partially supported — the interprovincial shift for large CMAs is confirmed, but medium CMAs do not show a statistically significant COVID-period interprovincial boost ($p = 0.06$), and the intraprovincial size effect is not Covid induced.
+**Secondary finding (inference).** On the interprovincial side, a significant post-2020 structural shift is detected for large CMAs (coefficient $-0.72$, $p = 0.04$). On the intraprovincial side the linear interaction is not statistically significant ($p = 0.14$), but the GAM partial dependency plot for the year effect shows a clear non-linear 2020–2022 spike. Baseline intraprovincial gains for medium (+2.60) and small (+2.83) CMAs over large CMAs are robust and large relative to any estimated Covid shift, suggesting the suburban growth pattern overshadows the pandemic shock. H3 is partially supported: the interprovincial shift for large CMAs is confirmed, but medium CMAs do not show a statistically significant Covid-period interprovincial boost ($p = 0.06$), and the intraprovincial CMA size effect is not Covid induced.
 
 **Limitations.**
 

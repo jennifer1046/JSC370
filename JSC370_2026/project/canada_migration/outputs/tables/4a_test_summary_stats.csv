@@ -1,4 +1,4 @@
-feature,mean,sd,min,max,pct_missing
+variable,mean,sd,min,max,pct_missing
 net_interprovincial,-168.75,4119.368722709849,-25740.0,20628.0,0.0
 net_intraprovincial,-1343.9,12900.119932886097,-100570.0,9631.0,0.0
 net_interprovincial_rate,0.1019734614424723,4.749341958962146,-15.12620061546113,14.48201593797114,0.0
