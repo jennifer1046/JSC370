@@ -4,14 +4,21 @@
     "href": "index.html",
     "title": "Internal Migration in Canada",
     "section": "",
-    "text": "Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.\nThis project studies CMA-level net internal migration rates from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in net interprovincial and intraprovincial migration rates can be predicted by push–pull structural factors, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration, and does that shift differ by CMA size?"
+    "text": "Yibing Xia — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: https://github.com/jennifer1046/JSC370.\nThis project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project’s scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill."
+  },
+  {
+    "objectID": "index.html#author",
+    "href": "index.html#author",
+    "title": "Internal Migration in Canada",
+    "section": "",
+    "text": "Yibing Xia — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: https://github.com/jennifer1046/JSC370.\nThis project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project’s scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill."
   },
   {
     "objectID": "index.html#overview",
     "href": "index.html#overview",
     "title": "Internal Migration in Canada",
-    "section": "",
-    "text": "Regulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.\nThis project studies CMA-level net internal migration rates from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in net interprovincial and intraprovincial migration rates can be predicted by push–pull structural factors, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration, and does that shift differ by CMA size?"
+    "section": "Overview",
+    "text": "Overview\nRegulations and stories about immigration have pervaded Canadian news in recent years. Much less attention is being paid to internal migration. Yet the study of internal migration can inform planning for infrastructure and public services, as well as helping researchers understand the change in the population composition of different regions. While the Canadian population is still concentrated in a few areas such as Toronto, Vancouver and Montreal, these CMAs have seen an exodus in recent years owing to high housing cost and general cost of living (McQuillan, 2024). A push factor is a local condition that encourages residents to leave, e.g., high rent, elevated unemployment, or an ageing population. A pull factor is a condition that attracts residents, e.g., employment opportunity, affordability.\nThis project studies CMA-level net internal migration rates from 2001 to 2024 under two distinct research goals.\nPrimary — Prediction (RQ1, RQ2) How much variance in net interprovincial and intraprovincial migration rates can be predicted by push–pull structural factors, and which model family generalises best out of time?\nSecondary — Inference (RQ3) Is the 2020–2024 COVID period associated with a structural shift in migration, and does that shift differ by CMA size?"
   },
   {
     "objectID": "index.html#navigate",
@@ -33,13 +40,6 @@
     "title": "Internal Migration in Canada",
     "section": "Data",
     "text": "Data\nFive Statistics Canada tables, all accessed via the public bulk CSV endpoint (no API key required):\n\n\n\n\n\n\n\n\nTable\nContent\nGeography\n\n\n\n\n17-10-0149-01\nComponents of population change (net migration outcomes)\nCMA\n\n\n17-10-0148-01\nPopulation estimates (age structure)\nCMA\n\n\n34-10-0133-01\nCMHC average rents\nCMA\n\n\n14-10-0020-01\nUnemployment and participation rate\nProvince\n\n\n27-10-0273-02\nR&D expenditures by performing sector\nProvince\n\n\n\nAfter cleaning and merging, the panel contains 40 CMAs × 24 years = 960 CMA-year observations."
-  },
-  {
-    "objectID": "index.html#author",
-    "href": "index.html#author",
-    "title": "Internal Migration in Canada",
-    "section": "Author",
-    "text": "Author\nYibing Xia — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: https://github.com/jennifer1046/JSC370.\nThis project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project’s scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill."
   },
   {
     "objectID": "index.html#references",

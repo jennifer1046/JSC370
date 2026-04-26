@@ -2560,7 +2560,7 @@ height: auto;
   <li><a href="#conclusion" id="toc-conclusion" class="nav-link" data-scroll-target="#conclusion">Conclusion</a></li>
   <li><a href="#references" id="toc-references" class="nav-link" data-scroll-target="#references">References</a></li>
   </ul>
-<div class="quarto-alternate-formats"><h2>Other Formats</h2><ul><li><a href="final.pdf"><i class="bi bi-file-pdf"></i>PDF</a></li></ul></div></nav>
+</nav>
 </div>
 <main class="content" id="quarto-document-content">
 
@@ -2734,7 +2734,670 @@ Figure 1: Aggregate migration counts (left) and their cross-sectional distribut
 <h4 class="anchored" data-anchor-id="summary-statistics-the-challenge-of-out-of-time-prediction">Summary Statistics: The Challenge of Out-of-Time Prediction</h4>
 <p>The respective summary statistics on the training (2001–2018, 720 CMA-years) and test (2019–2024, 240 CMA-years) sets:</p>
 <div id="out-summary-stats" class="cell" data-execution_count="2">
-
+<div class="table-grid">
+<div class="table-panel">
+<div class="table-caption">
+Table 1. Train summary statistics (2001–2018).
+</div>
+<table class="report-table">
+<thead>
+<tr>
+<th>
+variable
+</th>
+<th class="num">
+mean
+</th>
+<th class="num">
+sd
+</th>
+<th class="num">
+min
+</th>
+<th class="num">
+max
+</th>
+<th class="num">
+pct_missing
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+net_interprovincial
+</td>
+<td class="num">
+24.087
+</td>
+<td class="num">
+2,463.980
+</td>
+<td class="num">
+-11,590.000
+</td>
+<td class="num">
+13,886.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial
+</td>
+<td class="num">
+-13.058
+</td>
+<td class="num">
+4,979.140
+</td>
+<td class="num">
+-48,286.000
+</td>
+<td class="num">
+8,534.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td class="num">
+0.091
+</td>
+<td class="num">
+3.800
+</td>
+<td class="num">
+-12.820
+</td>
+<td class="num">
+17.928
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td class="num">
+3.480
+</td>
+<td class="num">
+4.350
+</td>
+<td class="num">
+-10.683
+</td>
+<td class="num">
+22.473
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+avg_rent
+</td>
+<td class="num">
+759.993
+</td>
+<td class="num">
+187.312
+</td>
+<td class="num">
+381.625
+</td>
+<td class="num">
+1,497.625
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+rent_deviation
+</td>
+<td class="num">
+19.593
+</td>
+<td class="num">
+100.644
+</td>
+<td class="num">
+-211.125
+</td>
+<td class="num">
+492.625
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+unemployment_rate
+</td>
+<td class="num">
+7.189
+</td>
+<td class="num">
+1.898
+</td>
+<td class="num">
+3.600
+</td>
+<td class="num">
+16.700
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+participation_rate
+</td>
+<td class="num">
+66.587
+</td>
+<td class="num">
+2.937
+</td>
+<td class="num">
+56.800
+</td>
+<td class="num">
+74.800
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+share_25_44
+</td>
+<td class="num">
+0.280
+</td>
+<td class="num">
+0.026
+</td>
+<td class="num">
+0.227
+</td>
+<td class="num">
+0.353
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+share_65plus
+</td>
+<td class="num">
+0.146
+</td>
+<td class="num">
+0.029
+</td>
+<td class="num">
+0.088
+</td>
+<td class="num">
+0.233
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+population
+</td>
+<td class="num">
+608,362.086
+</td>
+<td class="num">
+1,074,757.016
+</td>
+<td class="num">
+70,285.000
+</td>
+<td class="num">
+6,313,488.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+log_population
+</td>
+<td class="num">
+12.578
+</td>
+<td class="num">
+1.058
+</td>
+<td class="num">
+11.160
+</td>
+<td class="num">
+15.658
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+intl_inmigration
+</td>
+<td class="num">
+6,081.224
+</td>
+<td class="num">
+16,174.253
+</td>
+<td class="num">
+45.000
+</td>
+<td class="num">
+123,072.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+natural_increase_rate
+</td>
+<td class="num">
+2.912
+</td>
+<td class="num">
+2.611
+</td>
+<td class="num">
+-3.043
+</td>
+<td class="num">
+9.825
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+rd_provincial
+</td>
+<td class="num">
+7,391.024
+</td>
+<td class="num">
+5,738.828
+</td>
+<td class="num">
+142.000
+</td>
+<td class="num">
+17,095.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="table-panel">
+<div class="table-caption">
+Table 2. Holdout summary statistics (2019–2024).
+</div>
+<table class="report-table">
+<thead>
+<tr>
+<th>
+variable
+</th>
+<th class="num">
+mean
+</th>
+<th class="num">
+sd
+</th>
+<th class="num">
+min
+</th>
+<th class="num">
+max
+</th>
+<th class="num">
+pct_missing
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+net_interprovincial
+</td>
+<td class="num">
+-168.750
+</td>
+<td class="num">
+4,119.369
+</td>
+<td class="num">
+-25,740.000
+</td>
+<td class="num">
+20,628.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial
+</td>
+<td class="num">
+-1,343.900
+</td>
+<td class="num">
+12,900.120
+</td>
+<td class="num">
+-100,570.000
+</td>
+<td class="num">
+9,631.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td class="num">
+0.102
+</td>
+<td class="num">
+4.749
+</td>
+<td class="num">
+-15.126
+</td>
+<td class="num">
+14.482
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td class="num">
+4.411
+</td>
+<td class="num">
+6.608
+</td>
+<td class="num">
+-15.537
+</td>
+<td class="num">
+25.811
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+avg_rent
+</td>
+<td class="num">
+1,171.460
+</td>
+<td class="num">
+286.191
+</td>
+<td class="num">
+551.625
+</td>
+<td class="num">
+2,125.250
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+rent_deviation
+</td>
+<td class="num">
+19.778
+</td>
+<td class="num">
+153.117
+</td>
+<td class="num">
+-329.750
+</td>
+<td class="num">
+556.250
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+unemployment_rate
+</td>
+<td class="num">
+6.791
+</td>
+<td class="num">
+1.917
+</td>
+<td class="num">
+4.300
+</td>
+<td class="num">
+14.300
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+participation_rate
+</td>
+<td class="num">
+65.149
+</td>
+<td class="num">
+2.468
+</td>
+<td class="num">
+56.400
+</td>
+<td class="num">
+71.800
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+share_25_44
+</td>
+<td class="num">
+0.280
+</td>
+<td class="num">
+0.023
+</td>
+<td class="num">
+0.236
+</td>
+<td class="num">
+0.339
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+share_65plus
+</td>
+<td class="num">
+0.186
+</td>
+<td class="num">
+0.031
+</td>
+<td class="num">
+0.121
+</td>
+<td class="num">
+0.258
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+population
+</td>
+<td class="num">
+720,243.829
+</td>
+<td class="num">
+1,260,627.248
+</td>
+<td class="num">
+100,012.000
+</td>
+<td class="num">
+7,109,866.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+log_population
+</td>
+<td class="num">
+12.742
+</td>
+<td class="num">
+1.068
+</td>
+<td class="num">
+11.513
+</td>
+<td class="num">
+15.777
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+intl_inmigration
+</td>
+<td class="num">
+9,003.525
+</td>
+<td class="num">
+20,875.131
+</td>
+<td class="num">
+71.000
+</td>
+<td class="num">
+159,675.000
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+natural_increase_rate
+</td>
+<td class="num">
+0.365
+</td>
+<td class="num">
+2.457
+</td>
+<td class="num">
+-5.395
+</td>
+<td class="num">
+6.139
+</td>
+<td class="num">
+0.00
+</td>
+</tr>
+<tr>
+<td>
+rd_provincial
+</td>
+<td class="num">
+11,691.210
+</td>
+<td class="num">
+8,856.910
+</td>
+<td class="num">
+343.000
+</td>
+<td class="num">
+25,705.000
+</td>
+<td class="num">
+16.67
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="fig-eda" class="quarto-layout-panel">
 <figure class="quarto-float quarto-float-fig figure">
@@ -2768,136 +3431,315 @@ Figure 2: Period distribution shift by CMA size (left) and feature correlation 
 <section id="model-comparison" class="level4">
 <h4 class="anchored" data-anchor-id="model-comparison">Model comparison</h4>
 <div id="out-model-results" class="cell" data-execution_count="3">
-<p><strong>Table 3. Predictive model comparison on the rate target (per 1,000). 5-fold time-based CV inside train; single holdout evaluation on 2019–2024. RMSE is in rate units.</strong></p>
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-<col style="width: 14%">
-</colgroup>
+<div class="table-caption">
+Table 3. Predictive model comparison on the rate target (per 1,000). 5-fold time-based CV inside train; single holdout evaluation on 2019–2024. RMSE is in rate units.
+</div>
+<table class="report-table">
 <thead>
-<tr class="header">
-<th>outcome</th>
-<th>model</th>
-<th>cv_r2_mean</th>
-<th>cv_r2_sd</th>
-<th>cv_rmse_mean</th>
-<th>r2_test</th>
-<th>rmse_test</th>
+<tr>
+<th>
+outcome
+</th>
+<th>
+model
+</th>
+<th class="num">
+cv_r2_mean
+</th>
+<th class="num">
+cv_r2_sd
+</th>
+<th class="num">
+cv_rmse_mean
+</th>
+<th class="num">
+r2_test
+</th>
+<th class="num">
+rmse_test
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>Interprov.</td>
-<td>XGBoost</td>
-<td>0.293</td>
-<td>0.313</td>
-<td>3.010</td>
-<td>0.250</td>
-<td>4.352</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+XGBoost
+</td>
+<td class="num">
+0.293
+</td>
+<td class="num">
+0.313
+</td>
+<td class="num">
+3.010
+</td>
+<td class="num">
+0.250
+</td>
+<td class="num">
+4.352
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>RandomForest</td>
-<td>0.275</td>
-<td>0.334</td>
-<td>3.048</td>
-<td>0.297</td>
-<td>4.214</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+RandomForest
+</td>
+<td class="num">
+0.275
+</td>
+<td class="num">
+0.334
+</td>
+<td class="num">
+3.048
+</td>
+<td class="num">
+0.297
+</td>
+<td class="num">
+4.214
+</td>
 </tr>
-<tr class="odd">
-<td>Interprov.</td>
-<td>Ridge</td>
-<td>0.108</td>
-<td>0.040</td>
-<td>3.588</td>
-<td>0.034</td>
-<td>4.938</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+Ridge
+</td>
+<td class="num">
+0.108
+</td>
+<td class="num">
+0.040
+</td>
+<td class="num">
+3.588
+</td>
+<td class="num">
+0.034
+</td>
+<td class="num">
+4.938
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>Lasso</td>
-<td>0.092</td>
-<td>0.030</td>
-<td>3.605</td>
-<td>0.019</td>
-<td>4.976</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+Lasso
+</td>
+<td class="num">
+0.092
+</td>
+<td class="num">
+0.030
+</td>
+<td class="num">
+3.605
+</td>
+<td class="num">
+0.019
+</td>
+<td class="num">
+4.976
+</td>
 </tr>
-<tr class="odd">
-<td>Interprov.</td>
-<td>OLS</td>
-<td>0.073</td>
-<td>0.070</td>
-<td>3.628</td>
-<td>0.027</td>
-<td>4.957</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td class="num">
+0.073
+</td>
+<td class="num">
+0.070
+</td>
+<td class="num">
+3.628
+</td>
+<td class="num">
+0.027
+</td>
+<td class="num">
+4.957
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>GAM</td>
-<td>-0.447</td>
-<td>1.017</td>
-<td>3.999</td>
-<td>-0.120</td>
-<td>5.319</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+GAM
+</td>
+<td class="num">
+-0.447
+</td>
+<td class="num">
+1.017
+</td>
+<td class="num">
+3.999
+</td>
+<td class="num">
+-0.120
+</td>
+<td class="num">
+5.319
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>RandomForest</td>
-<td>0.535</td>
-<td>0.069</td>
-<td>2.763</td>
-<td>0.417</td>
-<td>5.036</td>
+<tr class="group-gap">
+<td colspan="7">
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>XGBoost</td>
-<td>0.489</td>
-<td>0.059</td>
-<td>2.860</td>
-<td>0.409</td>
-<td>5.069</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+RandomForest
+</td>
+<td class="num">
+0.535
+</td>
+<td class="num">
+0.069
+</td>
+<td class="num">
+2.763
+</td>
+<td class="num">
+0.417
+</td>
+<td class="num">
+5.036
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>Lasso</td>
-<td>0.275</td>
-<td>0.087</td>
-<td>3.462</td>
-<td>0.216</td>
-<td>5.837</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+XGBoost
+</td>
+<td class="num">
+0.489
+</td>
+<td class="num">
+0.059
+</td>
+<td class="num">
+2.860
+</td>
+<td class="num">
+0.409
+</td>
+<td class="num">
+5.069
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>Ridge</td>
-<td>0.259</td>
-<td>0.079</td>
-<td>3.497</td>
-<td>0.220</td>
-<td>5.822</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+Lasso
+</td>
+<td class="num">
+0.275
+</td>
+<td class="num">
+0.087
+</td>
+<td class="num">
+3.462
+</td>
+<td class="num">
+0.216
+</td>
+<td class="num">
+5.837
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>OLS</td>
-<td>0.205</td>
-<td>0.065</td>
-<td>3.615</td>
-<td>0.223</td>
-<td>5.814</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+Ridge
+</td>
+<td class="num">
+0.259
+</td>
+<td class="num">
+0.079
+</td>
+<td class="num">
+3.497
+</td>
+<td class="num">
+0.220
+</td>
+<td class="num">
+5.822
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>GAM</td>
-<td>-0.161</td>
-<td>0.407</td>
-<td>4.206</td>
-<td>0.285</td>
-<td>5.575</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td class="num">
+0.205
+</td>
+<td class="num">
+0.065
+</td>
+<td class="num">
+3.615
+</td>
+<td class="num">
+0.223
+</td>
+<td class="num">
+5.814
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+GAM
+</td>
+<td class="num">
+-0.161
+</td>
+<td class="num">
+0.407
+</td>
+<td class="num">
+4.206
+</td>
+<td class="num">
+0.285
+</td>
+<td class="num">
+5.575
+</td>
 </tr>
 </tbody>
 </table>
@@ -2943,150 +3785,354 @@ Figure 3: Random Forest permutation-importance ranking on the 2019–2024 holdo
 <section id="lag-comparison-rq2" class="level4">
 <h4 class="anchored" data-anchor-id="lag-comparison-rq2">Lag comparison (RQ2)</h4>
 <div id="out-lag" class="cell" data-execution_count="4">
-<p><strong>Table 4. Effect of lagging rent_deviation and unemployment_rate on model performance, for OLS and Random Forest.</strong></p>
-<table class="caption-top table table-sm table-striped small">
-<colgroup>
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-<col style="width: 12%">
-</colgroup>
+<div class="table-caption">
+Table 4. Effect of lagging <code>rent_deviation</code> and <code>unemployment_rate</code> on model performance, for OLS and Random Forest. Three specifications per outcome: contemporaneous, plus lag-1, and plus lag-1 and lag-2.
+</div>
+<table class="report-table">
 <thead>
-<tr class="header">
-<th>outcome</th>
-<th>model</th>
-<th>spec</th>
-<th>n_features</th>
-<th>cv_r2_mean</th>
-<th>cv_rmse_mean</th>
-<th>r2_test</th>
-<th>rmse_test</th>
+<tr>
+<th>
+outcome
+</th>
+<th>
+model
+</th>
+<th>
+spec
+</th>
+<th class="num">
+n_features
+</th>
+<th class="num">
+cv_r2_mean
+</th>
+<th class="num">
+cv_rmse_mean
+</th>
+<th class="num">
+r2_test
+</th>
+<th class="num">
+rmse_test
+</th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td>Interprov.</td>
-<td>OLS</td>
-<td>contemporaneous</td>
-<td>8</td>
-<td>0.073</td>
-<td>3.628</td>
-<td>0.027</td>
-<td>4.957</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+contemporaneous
+</td>
+<td class="num">
+8
+</td>
+<td class="num">
+0.073
+</td>
+<td class="num">
+3.628
+</td>
+<td class="num">
+0.027
+</td>
+<td class="num">
+4.957
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>OLS</td>
-<td>lag1</td>
-<td>10</td>
-<td>-0.382</td>
-<td>3.610</td>
-<td>-0.009</td>
-<td>5.048</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+lag1
+</td>
+<td class="num">
+10
+</td>
+<td class="num">
+-0.382
+</td>
+<td class="num">
+3.610
+</td>
+<td class="num">
+-0.009
+</td>
+<td class="num">
+5.048
+</td>
 </tr>
-<tr class="odd">
-<td>Interprov.</td>
-<td>OLS</td>
-<td>lag1_lag2</td>
-<td>12</td>
-<td>-1.311</td>
-<td>4.037</td>
-<td>-0.034</td>
-<td>5.111</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+lag1_lag2
+</td>
+<td class="num">
+12
+</td>
+<td class="num">
+-1.311
+</td>
+<td class="num">
+4.037
+</td>
+<td class="num">
+-0.034
+</td>
+<td class="num">
+5.111
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>RF</td>
-<td>contemporaneous</td>
-<td>8</td>
-<td>0.275</td>
-<td>3.048</td>
-<td>0.297</td>
-<td>4.214</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+contemporaneous
+</td>
+<td class="num">
+8
+</td>
+<td class="num">
+0.275
+</td>
+<td class="num">
+3.048
+</td>
+<td class="num">
+0.297
+</td>
+<td class="num">
+4.214
+</td>
 </tr>
-<tr class="odd">
-<td>Interprov.</td>
-<td>RF</td>
-<td>lag1</td>
-<td>10</td>
-<td>0.337</td>
-<td>2.737</td>
-<td>0.272</td>
-<td>4.288</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+lag1
+</td>
+<td class="num">
+10
+</td>
+<td class="num">
+0.337
+</td>
+<td class="num">
+2.737
+</td>
+<td class="num">
+0.272
+</td>
+<td class="num">
+4.288
+</td>
 </tr>
-<tr class="even">
-<td>Interprov.</td>
-<td>RF</td>
-<td>lag1_lag2</td>
-<td>12</td>
-<td>0.325</td>
-<td>2.779</td>
-<td>0.273</td>
-<td>4.285</td>
+<tr>
+<td>
+net_interprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+lag1_lag2
+</td>
+<td class="num">
+12
+</td>
+<td class="num">
+0.325
+</td>
+<td class="num">
+2.779
+</td>
+<td class="num">
+0.273
+</td>
+<td class="num">
+4.285
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>OLS</td>
-<td>contemporaneous</td>
-<td>7</td>
-<td>0.205</td>
-<td>3.615</td>
-<td>0.223</td>
-<td>5.814</td>
+<tr class="group-gap">
+<td colspan="8">
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>OLS</td>
-<td>lag1</td>
-<td>9</td>
-<td>0.220</td>
-<td>3.619</td>
-<td>0.235</td>
-<td>5.769</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+contemporaneous
+</td>
+<td class="num">
+7
+</td>
+<td class="num">
+0.205
+</td>
+<td class="num">
+3.615
+</td>
+<td class="num">
+0.223
+</td>
+<td class="num">
+5.814
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>OLS</td>
-<td>lag1_lag2</td>
-<td>11</td>
-<td>0.138</td>
-<td>3.748</td>
-<td>0.223</td>
-<td>5.814</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+lag1
+</td>
+<td class="num">
+9
+</td>
+<td class="num">
+0.220
+</td>
+<td class="num">
+3.619
+</td>
+<td class="num">
+0.235
+</td>
+<td class="num">
+5.769
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>RF</td>
-<td>contemporaneous</td>
-<td>7</td>
-<td>0.535</td>
-<td>2.763</td>
-<td>0.417</td>
-<td>5.036</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+OLS
+</td>
+<td>
+lag1_lag2
+</td>
+<td class="num">
+11
+</td>
+<td class="num">
+0.138
+</td>
+<td class="num">
+3.748
+</td>
+<td class="num">
+0.223
+</td>
+<td class="num">
+5.814
+</td>
 </tr>
-<tr class="odd">
-<td>Intraprov.</td>
-<td>RF</td>
-<td>lag1</td>
-<td>9</td>
-<td>0.533</td>
-<td>2.801</td>
-<td>0.403</td>
-<td>5.095</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+contemporaneous
+</td>
+<td class="num">
+7
+</td>
+<td class="num">
+0.535
+</td>
+<td class="num">
+2.763
+</td>
+<td class="num">
+0.417
+</td>
+<td class="num">
+5.036
+</td>
 </tr>
-<tr class="even">
-<td>Intraprov.</td>
-<td>RF</td>
-<td>lag1_lag2</td>
-<td>11</td>
-<td>0.556</td>
-<td>2.737</td>
-<td>0.388</td>
-<td>5.159</td>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+lag1
+</td>
+<td class="num">
+9
+</td>
+<td class="num">
+0.533
+</td>
+<td class="num">
+2.801
+</td>
+<td class="num">
+0.403
+</td>
+<td class="num">
+5.095
+</td>
+</tr>
+<tr>
+<td>
+net_intraprovincial_rate
+</td>
+<td>
+RF
+</td>
+<td>
+lag1_lag2
+</td>
+<td class="num">
+11
+</td>
+<td class="num">
+0.556
+</td>
+<td class="num">
+2.737
+</td>
+<td class="num">
+0.388
+</td>
+<td class="num">
+5.159
+</td>
 </tr>
 </tbody>
 </table>
@@ -3101,7 +4147,605 @@ Residual-vs-`log_population` diagnostics reveal that intraprovincial OLS residua
 <h3 class="anchored" data-anchor-id="secondary-inference-rq3">Secondary — Inference (RQ3)</h3>
 <p>The inferential OLS is fit on the full 2001–2024 panel with HC3 robust standard errors, per the specification in the Methods section. Tables 5 and 6 report the coefficients for both outcomes.</p>
 <div id="out-rq3-inter" class="cell" data-execution_count="5">
-
+<div class="table-caption">
+Table 5. RQ3 inferential OLS with HC3 standard errors — net interprovincial migration rate.
+</div>
+<table class="report-table">
+<thead>
+<tr>
+<th>
+term
+</th>
+<th class="num">
+estimate
+</th>
+<th class="num">
+se_hc3
+</th>
+<th class="num">
+ci_lower
+</th>
+<th class="num">
+ci_upper
+</th>
+<th class="num">
+p_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Intercept
+</td>
+<td class="num">
+204.7754
+</td>
+<td class="num">
+63.4457
+</td>
+<td class="num">
+80.4242
+</td>
+<td class="num">
+329.1267
+</td>
+<td class="num">
+0.001248
+</td>
+</tr>
+<tr>
+<td>
+C(cma_size)[T.Medium]
+</td>
+<td class="num">
+-1.1894
+</td>
+<td class="num">
+0.5693
+</td>
+<td class="num">
+-2.3052
+</td>
+<td class="num">
+-0.0735
+</td>
+<td class="num">
+0.03669
+</td>
+</tr>
+<tr>
+<td>
+C(cma_size)[T.Small]
+</td>
+<td class="num">
+-1.1114
+</td>
+<td class="num">
+0.6131
+</td>
+<td class="num">
+-2.3130
+</td>
+<td class="num">
+0.0902
+</td>
+<td class="num">
+0.06986
+</td>
+</tr>
+<tr>
+<td>
+rent_deviation
+</td>
+<td class="num">
+0.0093
+</td>
+<td class="num">
+0.0016
+</td>
+<td class="num">
+0.0061
+</td>
+<td class="num">
+0.0125
+</td>
+<td class="num">
+1.008e-08
+</td>
+</tr>
+<tr>
+<td>
+unemployment_rate
+</td>
+<td class="num">
+-0.5566
+</td>
+<td class="num">
+0.0879
+</td>
+<td class="num">
+-0.7289
+</td>
+<td class="num">
+-0.3844
+</td>
+<td class="num">
+2.416e-10
+</td>
+</tr>
+<tr>
+<td>
+share_65plus
+</td>
+<td class="num">
+27.2349
+</td>
+<td class="num">
+6.2769
+</td>
+<td class="num">
+14.9325
+</td>
+<td class="num">
+39.5374
+</td>
+<td class="num">
+1.432e-05
+</td>
+</tr>
+<tr>
+<td>
+intl_inmigration
+</td>
+<td class="num">
+-0.0000
+</td>
+<td class="num">
+0.0000
+</td>
+<td class="num">
+-0.0000
+</td>
+<td class="num">
+0.0000
+</td>
+<td class="num">
+0.13
+</td>
+</tr>
+<tr>
+<td>
+log_population
+</td>
+<td class="num">
+-0.6971
+</td>
+<td class="num">
+0.3812
+</td>
+<td class="num">
+-1.4442
+</td>
+<td class="num">
+0.0501
+</td>
+<td class="num">
+0.06746
+</td>
+</tr>
+<tr>
+<td>
+rd_provincial
+</td>
+<td class="num">
+-0.0001
+</td>
+<td class="num">
+0.0000
+</td>
+<td class="num">
+-0.0002
+</td>
+<td class="num">
+-0.0001
+</td>
+<td class="num">
+3.057e-09
+</td>
+</tr>
+<tr>
+<td>
+year
+</td>
+<td class="num">
+-0.0967
+</td>
+<td class="num">
+0.0320
+</td>
+<td class="num">
+-0.1594
+</td>
+<td class="num">
+-0.0340
+</td>
+<td class="num">
+0.002522
+</td>
+</tr>
+<tr>
+<td>
+post_covid
+</td>
+<td class="num">
+1447.2345
+</td>
+<td class="num">
+709.7864
+</td>
+<td class="num">
+56.0788
+</td>
+<td class="num">
+2838.3903
+</td>
+<td class="num">
+0.04145
+</td>
+</tr>
+<tr>
+<td>
+post_covid:C(cma_size)[T.Medium]
+</td>
+<td class="num">
+-2.0363
+</td>
+<td class="num">
+1.0779
+</td>
+<td class="num">
+-4.1490
+</td>
+<td class="num">
+0.0764
+</td>
+<td class="num">
+0.05888
+</td>
+</tr>
+<tr>
+<td>
+post_covid:C(cma_size)[T.Small]
+</td>
+<td class="num">
+1.0195
+</td>
+<td class="num">
+0.9048
+</td>
+<td class="num">
+-0.7539
+</td>
+<td class="num">
+2.7929
+</td>
+<td class="num">
+0.2598
+</td>
+</tr>
+<tr>
+<td>
+year:post_covid
+</td>
+<td class="num">
+-0.7153
+</td>
+<td class="num">
+0.3512
+</td>
+<td class="num">
+-1.4036
+</td>
+<td class="num">
+-0.0270
+</td>
+<td class="num">
+0.04168
+</td>
+</tr>
+</tbody>
+</table>
+<br>
+<div class="table-caption">
+Table 6. RQ3 inferential OLS with HC3 standard errors — net intraprovincial migration rate.
+</div>
+<table class="report-table">
+<thead>
+<tr>
+<th>
+term
+</th>
+<th class="num">
+estimate
+</th>
+<th class="num">
+se_hc3
+</th>
+<th class="num">
+ci_lower
+</th>
+<th class="num">
+ci_upper
+</th>
+<th class="num">
+p_value
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Intercept
+</td>
+<td class="num">
+-128.2182
+</td>
+<td class="num">
+66.1367
+</td>
+<td class="num">
+-257.8438
+</td>
+<td class="num">
+1.4074
+</td>
+<td class="num">
+0.05254
+</td>
+</tr>
+<tr>
+<td>
+C(cma_size)[T.Medium]
+</td>
+<td class="num">
+2.5969
+</td>
+<td class="num">
+0.6724
+</td>
+<td class="num">
+1.2791
+</td>
+<td class="num">
+3.9147
+</td>
+<td class="num">
+0.0001123
+</td>
+</tr>
+<tr>
+<td>
+C(cma_size)[T.Small]
+</td>
+<td class="num">
+2.8254
+</td>
+<td class="num">
+0.8895
+</td>
+<td class="num">
+1.0821
+</td>
+<td class="num">
+4.5687
+</td>
+<td class="num">
+0.001491
+</td>
+</tr>
+<tr>
+<td>
+rent_deviation
+</td>
+<td class="num">
+0.0021
+</td>
+<td class="num">
+0.0021
+</td>
+<td class="num">
+-0.0020
+</td>
+<td class="num">
+0.0062
+</td>
+<td class="num">
+0.3111
+</td>
+</tr>
+<tr>
+<td>
+unemployment_rate
+</td>
+<td class="num">
+-0.1119
+</td>
+<td class="num">
+0.0611
+</td>
+<td class="num">
+-0.2315
+</td>
+<td class="num">
+0.0078
+</td>
+<td class="num">
+0.06688
+</td>
+</tr>
+<tr>
+<td>
+share_65plus
+</td>
+<td class="num">
+2.1986
+</td>
+<td class="num">
+5.9353
+</td>
+<td class="num">
+-9.4344
+</td>
+<td class="num">
+13.8316
+</td>
+<td class="num">
+0.7111
+</td>
+</tr>
+<tr>
+<td>
+intl_inmigration
+</td>
+<td class="num">
+-0.0001
+</td>
+<td class="num">
+0.0000
+</td>
+<td class="num">
+-0.0002
+</td>
+<td class="num">
+-0.0001
+</td>
+<td class="num">
+2.227e-19
+</td>
+</tr>
+<tr>
+<td>
+log_population
+</td>
+<td class="num">
+0.3593
+</td>
+<td class="num">
+0.4998
+</td>
+<td class="num">
+-0.6203
+</td>
+<td class="num">
+1.3389
+</td>
+<td class="num">
+0.4722
+</td>
+</tr>
+<tr>
+<td>
+year
+</td>
+<td class="num">
+0.0630
+</td>
+<td class="num">
+0.0330
+</td>
+<td class="num">
+-0.0017
+</td>
+<td class="num">
+0.1277
+</td>
+<td class="num">
+0.05637
+</td>
+</tr>
+<tr>
+<td>
+post_covid
+</td>
+<td class="num">
+874.4057
+</td>
+<td class="num">
+597.3864
+</td>
+<td class="num">
+-296.4502
+</td>
+<td class="num">
+2045.2616
+</td>
+<td class="num">
+0.1433
+</td>
+</tr>
+<tr>
+<td>
+post_covid:C(cma_size)[T.Medium]
+</td>
+<td class="num">
+1.1557
+</td>
+<td class="num">
+0.9949
+</td>
+<td class="num">
+-0.7942
+</td>
+<td class="num">
+3.1057
+</td>
+<td class="num">
+0.2454
+</td>
+</tr>
+<tr>
+<td>
+post_covid:C(cma_size)[T.Small]
+</td>
+<td class="num">
+0.7316
+</td>
+<td class="num">
+1.0437
+</td>
+<td class="num">
+-1.3140
+</td>
+<td class="num">
+2.7771
+</td>
+<td class="num">
+0.4833
+</td>
+</tr>
+<tr>
+<td>
+year:post_covid
+</td>
+<td class="num">
+-0.4325
+</td>
+<td class="num">
+0.2954
+</td>
+<td class="num">
+-1.0115
+</td>
+<td class="num">
+0.1465
+</td>
+<td class="num">
+0.1432
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <p>The models explain 16.9% of variance in the net interprovincial rate and 28.4% in the net intraprovincial rate (full-panel R²). Although the R² is low to moderate, the goal here is inference on specific coefficients.</p>
 <p>Interpretation:</p>
