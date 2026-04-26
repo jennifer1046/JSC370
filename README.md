@@ -5,6 +5,7 @@ JSC370 (Data Science II) · University of Toronto · Final Project · 2026
 **Author:** Yibing Xia
 **Website:** <https://jennifer1046.github.io/JSC370/>
 **Written report:** <https://jennifer1046.github.io/JSC370/final.html>
+**PDF report:** <https://jennifer1046.github.io/JSC370/final.pdf>
 **Interactive visualisations (Homework 5):** <https://jennifer1046.github.io/JSC370/viz.html>
 
 ## Overview
