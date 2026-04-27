@@ -7,7 +7,7 @@ subtitle: "Push and Pull Factors, Lag Effects, and Covid-19 Structural Shift"
 
 **Yibing Xia** — University of Toronto · JSC370 (Data Science II) · 2026. Source code and data: <https://github.com/jennifer1046/JSC370>.
 
-This project is created by Yibing Xia as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project's scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill.
+This project is created as part of JSC370 offered by the University of Toronto in Winter 2026. I would like to thank Professor Meredith Franklin for providing feedback and suggestions for the final project's scope and topic. I would also like to thank the TAs for providing guidance on website deployment, a valuable skill.
 
 ## Overview
 
@@ -35,15 +35,15 @@ This project studies CMA-level net internal migration rates from 2001 to 2024 un
 
 ## Data
 
-Five Statistics Canada tables, all accessed via the public bulk CSV endpoint (no API key required):
+Five Statistics Canada tables, all accessed via the public [bulk CSV endpoint](https://www150.statcan.gc.ca/n1/en/type/data) (no API key required):
 
 | Table | Content | Geography |
 |---|---|---|
-| 17-10-0149-01 | Components of population change (net migration outcomes) | CMA |
-| 17-10-0148-01 | Population estimates (age structure) | CMA |
-| 34-10-0133-01 | CMHC average rents | CMA |
-| 14-10-0020-01 | Unemployment and participation rate | Province |
-| 27-10-0273-02 | R&D expenditures by performing sector | Province |
+| [17-10-0149-01](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710014901) | Components of population change (net migration outcomes) | CMA |
+| [17-10-0148-01](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1710014801) | Population estimates (age structure) | CMA |
+| [34-10-0133-01](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=3410013301) | CMHC average rents | CMA |
+| [14-10-0020-01](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=1410002001) | Unemployment and participation rate | Province |
+| [27-10-0273-02](https://www150.statcan.gc.ca/t1/tbl1/en/tv.action?pid=2710027302) | R&D expenditures by performing sector | Province |
 
 After cleaning and merging, the panel contains 40 CMAs × 24 years = **960 CMA-year observations**.
 

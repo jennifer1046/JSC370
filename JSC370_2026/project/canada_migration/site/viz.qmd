@@ -1,9 +1,9 @@
 ---
 title: "Interactive Visualisations"
-subtitle: "Homework 5 — three views of the CMA internal migration panel"
+subtitle: "Homework 5 — three interactive visualizations on the CMA internal migration panel"
 ---
 
-This page presents three interactive Plotly visualisations of the merged CMA panel (40 CMAs × 24 years = 960 observations, 2001–2024). Each view answers a different question about the push–pull dynamics of internal migration; all three read the already-processed panel at `../data/processed/panel_cma.csv` and are self-contained (the Plotly bundle is embedded so the plots work offline after the page is loaded).
+This page presents three interactive Plotly visualisations of the merged CMA panel at `../data/processed/panel_cma.csv` (40 CMAs × 24 years = 960 observations, 2001–2024). Each view answers a different question about the internal migration patterns.
 
 ```{python}
 #| label: viz-setup
@@ -93,7 +93,7 @@ panel["cma_display"] = panel["geo_key"].map(display_name)
 
 ## Figure 1 — Net migration rate across Canada, 2001–2024
 
-This map places each of the 40 CMAs at its city-centre coordinates; bubble size is population, bubble colour is net intraprovincial migration rate (migrants per 1,000 residents, net of outflows). The year slider below the map animates the full 2001–2024 panel. Hover over any bubble to see the CMA name, year, rate, and population.
+This map places each of the 40 CMAs at its city-centre coordinates; bubble size is population, bubble colour is net intraprovincial migration rate (migrants per 1,000 residents, net of outflows). The year slider below the map controls which year's data is shown and provides the option to show animation over 2001-2024. Hover over any bubble to see the CMA name, year, population, and migration rates.
 
 ```{python}
 #| label: viz-map
@@ -110,7 +110,6 @@ fig1 = px.scatter_geo(
     hover_data={
         "lat": False, "lon": False, "year": True,
         "net_intraprovincial_rate": ":.2f",
-        "net_interprovincial_rate": ":.2f",
         "population": ":,",
     },
     animation_frame="year",
@@ -144,12 +143,12 @@ Figure 1. Net intraprovincial migration rate per 1,000 population at each CMA, a
 :::
 
 ::: {.figure-description}
-The animation surfaces three patterns at a glance. First, the three largest metros (Toronto, Montréal, Vancouver) turn deep red in 2020–2022 — the COVID-era outflow to smaller CMAs. Second, the bluest bubbles over the panel period are commuter-range satellites: Barrie, Oshawa, Hamilton, Kelowna, Abbotsford — cities visibly pulling residents out of the adjacent metro. Third, Atlantic-Canada CMAs (Halifax, Moncton, St. John's) are relatively muted in earlier years but begin gaining in 2020–2024, consistent with the pandemic-era coast-ward trend.
+Toronto, Montréal, and Vancouver begin turning red around 2015–2016, suggesting that intraprovincial out-migration from large CMAs was already underway as a longer-term structural trend. The Covid window (2020–2024) deepens the colour for these cities noticeably, but whether the pandemic represents a genuine structural shift or an acceleration of an existing trend needs to be assessed more rigorously. It motivates the formal statistical inference using OLS in the written report. Cities like Barrie, Kelowna, and Sherbrooke appear increasingly blue as time progresses. Although this project does not model bilateral flows directly, the simultaneous pattern of large CMAs losing residents while nearby small and medium CMAs gain strongly suggests that the small to medium CMAs adjacent to Toronto, Vancouver, and Montréal are the primary destinations of the out-migrating residents.
 :::
 
 ## Figure 2 — Interactive per-CMA migration time series
 
-Use the dropdown to pick a CMA; the chart then shows that CMA's **net interprovincial** and **net intraprovincial** migration rate from 2001 to 2024 as two separate, legend-toggleable lines. The range slider at the bottom lets you zoom to any sub-period (e.g. 2018–2024 to isolate the COVID window). The shaded band highlights 2020–2024.
+The dropdown menu controls which CMA is displayed. The chart then shows that CMA's net migration rates from 2001 to 2024 as two lines: blue for interprovincial and red for intraprovincial. The shaded band highlights the Covid/post-Covid window between 2020–2024.
 
 ```{python}
 #| label: viz-timeseries
@@ -199,7 +198,7 @@ for i, row in cmas_sorted.iterrows():
 
 fig2.update_layout(
     title=f"Net migration rate — {cmas_sorted.loc[0, 'cma_display']}",
-    xaxis=dict(title="Year", rangeslider=dict(visible=True), type="linear"),
+    xaxis=dict(title="Year", rangeslider=dict(visible=False), type="linear"),
     yaxis=dict(title="Rate per 1,000 population", zeroline=True, zerolinecolor="#888"),
     updatemenus=[dict(
         active=0, buttons=buttons,
@@ -224,44 +223,56 @@ fig2.show()
 ```
 
 ::: {.figure-caption}
-Figure 2. Per-CMA net migration rate, interprovincial and intraprovincial, with a CMA dropdown and an x-axis range slider. The orange band marks 2020–2024.
+Figure 2. Per-CMA net migration rate (blue line: interprovincial, red line: intraprovincial) with a CMA dropdown. The orange band marks 2020–2024.
 :::
 
 ::: {.figure-description}
-Exploring Toronto, Vancouver, and Montréal in turn shows the large-metro COVID out-migration story as a deep dip in the red (intraprovincial) line around 2020–2022, with the blue (interprovincial) line often staying flat or slightly improving. Selecting a mid-size commuter CMA like Kelowna or Kitchener–Cambridge–Waterloo flips the pattern: red spikes upward in the same COVID window. Smaller Atlantic CMAs (Moncton, Halifax, St. John's) show their own distinct late-panel rebound. This figure is useful for spot-checking whether the aggregate findings in the report hold up at the individual-CMA level.
+The blue (interprovincial) and red (intraprovincial) lines often tell different stories for the same city. For most CMAs, the red line shows similar or greater variation over time than the blue line. For instance, Toronto's red line drops sharply in the Covid window (2020–2022) while its blue line is comparatively flat. However, exceptions exist: in Edmonton, Halifax, and Regina the red line is relatively stable across the panel while the blue (interprovincial) line carries most of the temporal change, suggesting that movement across provinces accounts for most of the migration variability in those cities. This visualization allows us to verify whether any individual CMA's trajectory matches the aggregate patterns noted in the written report.
 :::
 
-## Figure 3 — Rent deviation vs. intraprovincial rate, animated by year
+## Figure 3 — Provincial unemployment rate vs. net interprovincial rate, animated by year
 
-Each bubble is one CMA in one year: x-axis is the CMA's average rent minus the provincial median rent for that year (positive = more expensive than the provincial average), y-axis is net intraprovincial migration rate per 1,000, bubble size is population, and colour groups CMAs into Large/Medium/Small by pre-COVID population tertile. The year slider animates the annual scatter.
+Each bubble is one CMA in one year: x-axis is the provincial unemployment rate (all CMAs in the same province share the same x-value), y-axis is net interprovincial migration rate per 1,000, bubble size is population, and colour groups CMAs by province. The year slider animates the annual scatter across 2001–2024. Hover over any bubble to see the CMA name, year, unemployment rate, interprovincial rate, and population.
 
 ```{python}
-#| label: viz-rent-scatter
-sc = panel.dropna(subset=["rent_deviation", "net_intraprovincial_rate", "population"]).copy()
-sc["cma_size"] = pd.Categorical(sc["cma_size"], categories=["Small", "Medium", "Large"], ordered=True)
-sc = sc.sort_values(["year", "cma_size", "cma_display"])
+#| label: viz-unemp-scatter
+PROVINCE_COLORS = {
+    "Ontario":                    "#4E79A7",
+    "Quebec":                     "#F28E2B",
+    "British Columbia":           "#59A14F",
+    "Alberta":                    "#E15759",
+    "Manitoba":                   "#76B7B2",
+    "Saskatchewan":               "#EDC948",
+    "Nova Scotia":                "#B07AA1",
+    "New Brunswick":              "#FF9DA7",
+    "Newfoundland and Labrador":  "#9C755F",
+}
+
+sc = panel.dropna(subset=["unemployment_rate", "net_interprovincial_rate", "population"]).copy()
+sc = sc.sort_values(["year", "province", "cma_display"])
+
 fig3 = px.scatter(
     sc,
-    x="rent_deviation",
-    y="net_intraprovincial_rate",
+    x="unemployment_rate",
+    y="net_interprovincial_rate",
     size="population",
     size_max=45,
-    color="cma_size",
-    color_discrete_map={"Small": "#4E79A7", "Medium": "#59A14F", "Large": "#E15759"},
+    color="province",
+    color_discrete_map=PROVINCE_COLORS,
     hover_name="cma_display",
     hover_data={
         "year": True,
-        "rent_deviation": ":.0f",
-        "net_intraprovincial_rate": ":.2f",
+        "unemployment_rate": ":.1f",
+        "net_interprovincial_rate": ":.2f",
         "population": ":,",
-        "cma_size": True,
+        "province": True,
     },
     animation_frame="year",
     animation_group="geo_key",
     labels={
-        "rent_deviation": "Average rent minus provincial median ($)",
-        "net_intraprovincial_rate": "Net intraprovincial rate (per 1,000)",
-        "cma_size": "CMA size",
+        "unemployment_rate": "Provincial unemployment rate (%)",
+        "net_interprovincial_rate": "Net interprovincial rate (per 1,000)",
+        "province": "Province",
     },
     height=580,
 )
@@ -269,15 +280,15 @@ fig3.update_yaxes(zeroline=True, zerolinecolor="#888")
 fig3.update_xaxes(zeroline=True, zerolinecolor="#888")
 fig3.update_layout(
     margin=dict(l=40, r=10, t=20, b=40),
-    legend=dict(orientation="h", y=-0.18, x=0.5, xanchor="center"),
+    legend=dict(orientation="v", x=1.01, y=0.5, xanchor="left"),
 )
 fig3.show()
 ```
 
 ::: {.figure-caption}
-Figure 3. Rent deviation (CMA average rent minus provincial median) vs. net intraprovincial migration rate, bubble size = population, colour = pre-COVID CMA size tertile, animated across 2001–2024.
+Figure 3. Provincial unemployment rate vs. net interprovincial migration rate per 1,000, bubble size = population, colour = province, animated across 2001–2024.
 :::
 
 ::: {.figure-description}
-The within-year cross-section consistently shows large red (Large) bubbles clustered on the upper-right early in the panel (high rent, mild positive intraprov rate) and sliding into the lower-right in 2020–2022 (high rent, strongly negative intraprov rate) — the big-metro COVID out-migration signature. Mid-size blue/green bubbles stay above zero for most of the panel and swing further positive in the COVID window, corroborating the push–pull direction: when big-metro rents stay elevated while remote work becomes feasible, residents flow to mid-size CMAs with less rent pressure. The animation makes this geographic rebalancing visible year by year in a way that a static scatter cannot.
+The push story for interprovincial migration is visible in the Alberta cluster (red). In the early 2000s and again around 2014, Alberta's low unemployment coincides with positive interprovincial rates — the province was attracting workers from higher-unemployment provinces. When the oil price collapse hits around 2015–2016, Alberta's unemployment rises and its interprovincial rate swings negative, as the province begins losing residents to other provinces. Ontario and British Columbia CMAs (blue and green) cluster near the middle throughout, reflecting their relatively stable labour markets and large population bases. Atlantic CMAs (Nova Scotia, New Brunswick, Newfoundland) sit at the higher-unemployment end of the x-axis for most of the panel, with negative or near-zero interprovincial rates, consistent with persistent out-migration to central Canada.
 :::
