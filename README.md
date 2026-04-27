@@ -1,4 +1,4 @@
-# Internal Migration in Canada — Push–Pull Factors and the COVID-19 Structural Shift
+# Internal Migration in Canada: Push and Pull Factors, Lag Effects, and Covid-19 Structural Shift
 
 JSC370 (Data Science II) · University of Toronto · Final Project · 2026
 
@@ -10,10 +10,10 @@ JSC370 (Data Science II) · University of Toronto · Final Project · 2026
 
 ## Overview
 
-CMA-level net internal migration in Canada, 2001–2024. Two goals:
+CMA-level net internal migration rate in Canada, 2001–2024. Two goals:
 
-- **Primary (prediction).** How much variance in CMA net migration rate per 1,000 population is explained by push–pull structural predictors, and which model family generalises best out of time?
-- **Secondary (inference).** Is the 2020–2024 COVID period associated with a structural shift in migration trend beyond what push–pull conditions predict, and does the shift differ by CMA size?
+- **Primary (prediction).** How much variance in CMA net migration rate per 1,000 population is explained by demographic and socioeconomic push and pull factors, and does lagging key features by one to two years improve out of time prediction?
+- **Secondary (inference).** Is the 2020–2024 COVID period associated with a structural shift in migration trend beyond what push and pull factors explain, and does the shift differ by CMA size?
 
 ## Repository layout
 
@@ -73,7 +73,3 @@ cd ..
 # 4. (Optional) Deploy to GitHub Pages.
 cd site && quarto publish gh-pages
 ```
-
-## License
-
-Coursework submission — not released under an open-source license.
