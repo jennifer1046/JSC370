@@ -91,7 +91,7 @@ def display_name(k: str) -> str:
 panel["cma_display"] = panel["geo_key"].map(display_name)
 ```
 
-## Figure 1 — Net migration rate across Canada, 2001–2024
+## Figure 1 — Net intraprovincial migration rate across Canada, 2001–2024
 
 This map places each of the 40 CMAs at its city-centre coordinates; bubble size is population, bubble colour is net intraprovincial migration rate (migrants per 1,000 residents, net of outflows). The year slider below the map controls which year's data is shown and provides the option to show animation over 2001-2024. Hover over any bubble to see the CMA name, year, population, and migration rates.
 
@@ -230,7 +230,7 @@ Figure 2. Per-CMA net migration rate (blue line: interprovincial, red line: intr
 The blue (interprovincial) and red (intraprovincial) lines often tell different stories for the same city. For most CMAs, the red line shows similar or greater variation over time than the blue line. For instance, Toronto's red line drops sharply in the Covid window (2020–2022) while its blue line is comparatively flat. However, exceptions exist: in Edmonton, Halifax, and Regina the red line is relatively stable across the panel while the blue (interprovincial) line carries most of the temporal change, suggesting that movement across provinces accounts for most of the migration variability in those cities. This visualization allows us to verify whether any individual CMA's trajectory matches the aggregate patterns noted in the written report.
 :::
 
-## Figure 3 — Provincial unemployment rate vs. net interprovincial rate, animated by year
+## Figure 3 — Provincial unemployment rate vs. net interprovincial migration rate, animated by year
 
 Each bubble corresponds to one CMA in one year: x-axis is the provincial unemployment rate (all CMAs in the same province share the same x-value), y-axis is net interprovincial migration rate per 1,000, bubble size is population, and CMAs in the same province share a colour. The year slider controls which year's cross sectional data is shown and provides the option to animate across 2001–2024. Hover over any bubble to see the CMA name, year, unemployment rate, interprovincial rate, and population.
 
